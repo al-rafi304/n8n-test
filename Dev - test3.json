@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-09-24T16:39:04.532Z",
-  "updatedAt": "2025-09-24T16:39:04.000Z",
+  "updatedAt": "2025-09-24T16:40:53.000Z",
   "id": "3tpQ14LqoiyxuCRt",
   "name": "Dev - test3",
   "active": false,
@@ -20,7 +20,15 @@
     {
       "parameters": {
         "operation": "get",
-        "tableId": "workspaces"
+        "tableId": "workspaces",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "workspace_name",
+              "keyValue": "Intellixio"
+            }
+          ]
+        }
       },
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
@@ -56,8 +64,8 @@
   },
   "staticData": null,
   "meta": null,
-  "pinData": null,
-  "versionId": "e690a471-a47e-4cdb-83ca-cee53d614555",
+  "pinData": {},
+  "versionId": "09d42e82-1e15-4379-afc7-938c08159b9b",
   "triggerCount": 0,
   "shared": [
     {
