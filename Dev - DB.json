@@ -1,0 +1,280 @@
+{
+  "createdAt": "2025-09-24T16:39:44.755Z",
+  "updatedAt": "2025-09-24T16:39:44.000Z",
+  "id": "H1LUxwPKsI12C5y5",
+  "name": "Dev - DB",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        -80
+      ],
+      "id": "80996648-8407-4f1d-b307-5bdc9cb5b594",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT DISTINCT ON (buyer_number) buyer_name, buyer_number\nFROM conversations\nWHERE id='123'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -16,
+        240
+      ],
+      "id": "34d4cdbb-277c-449a-86d9-24b00d01a987",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "NmBd5jRogFqahwb7",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO buyers (number, name)\nVALUES ($1, $2)",
+        "options": {
+          "queryReplacement": "=[{{ $json.buyer_number }}]"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        464,
+        208
+      ],
+      "id": "0961905a-d951-45ae-ae5c-968ca7db9a44",
+      "name": "Execute a SQL query1",
+      "credentials": {
+        "postgres": {
+          "id": "NmBd5jRogFqahwb7",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        672,
+        -128
+      ],
+      "id": "9ffb1f62-365a-4e19-84b8-090c795a9bfe",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "46ced1d2-ecbc-497b-882b-5380f505940e",
+              "name": "test",
+              "value": "test",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        112,
+        -320
+      ],
+      "id": "4ebc8e80-c34d-43fe-a720-4e240b375dae",
+      "name": "Edit Fields"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "errorWorkflow": "diJYcEVHxO6GUcaA",
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "none"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "1c13fdbb-bb81-495d-9f0a-5e25f6a421b4",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-24T16:39:44.894Z",
+      "updatedAt": "2025-09-24T16:39:44.894Z",
+      "role": "workflow:owner",
+      "workflowId": "H1LUxwPKsI12C5y5",
+      "projectId": "6tAtlxJWCabRStRk",
+      "project": {
+        "createdAt": "2025-02-23T09:34:22.834Z",
+        "updatedAt": "2025-09-20T11:43:05.000Z",
+        "id": "6tAtlxJWCabRStRk",
+        "name": "Intellixio",
+        "type": "team",
+        "icon": {
+          "type": "icon",
+          "value": "layer-group"
+        },
+        "description": "",
+        "projectRelations": [
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "f34baaa0-ad5e-4058-8dd6-4597cbdb4c4b",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-02-23T09:31:05.569Z",
+              "updatedAt": "2025-09-24T10:51:36.000Z",
+              "id": "f34baaa0-ad5e-4058-8dd6-4597cbdb4c4b",
+              "email": "nazmul@intellixio.com",
+              "firstName": "Md",
+              "lastName": "Nazmul Hoque Bhuiyan",
+              "personalizationAnswers": null,
+              "settings": {
+                "userActivated": true,
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "gnnzSL8nJSeJJzsW",
+                "userActivatedAt": 1742741512234,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1743747154775
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-23",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "1e68db5b-4913-45af-b443-69532f68ffac",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-04-13T06:25:33.258Z",
+              "updatedAt": "2025-09-23T18:00:19.000Z",
+              "id": "1e68db5b-4913-45af-b443-69532f68ffac",
+              "email": "arafi304.office@gmail.com",
+              "firstName": "Mohammad",
+              "lastName": "Al Rafi",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "SKLCNSSSGove7dt7",
+                "userActivated": true,
+                "userActivatedAt": 1746352924058,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1747539770607
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-23",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "9ee433e6-26e5-4c4e-a0a9-059003221711",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-05-21T06:43:50.821Z",
+              "updatedAt": "2025-09-24T06:27:51.000Z",
+              "id": "9ee433e6-26e5-4c4e-a0a9-059003221711",
+              "email": "sumon.intellixio@gmail.com",
+              "firstName": "Zahid Khandaker",
+              "lastName": "Sumon",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-23",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "b4a0fd83-613e-45d3-95bc-b8c90438d59e",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-09-20T11:32:07.300Z",
+              "updatedAt": "2025-09-23T02:59:58.000Z",
+              "id": "b4a0fd83-613e-45d3-95bc-b8c90438d59e",
+              "email": "nazmulofficial@outlook.com",
+              "firstName": "Sheikh Mohammad Nazmul",
+              "lastName": "Hasan",
+              "personalizationAnswers": null,
+              "settings": null,
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-22",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-09-24T16:39:45.186Z",
+      "updatedAt": "2025-09-24T16:39:45.186Z",
+      "id": "6oZYUt9mUJPYWQtP",
+      "name": "dev-of:a6yLUNusi1KgwlMW"
+    }
+  ]
+}
