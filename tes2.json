@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-09-23T19:28:47.643Z",
-  "updatedAt": "2025-09-24T15:11:11.000Z",
+  "updatedAt": "2025-09-24T15:13:46.000Z",
   "id": "WUPBeU8nVDrXWNBy",
   "name": "tes2",
   "active": false,
@@ -31,11 +31,104 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        224,
-        0
+        368,
+        736
       ],
-      "id": "dc2a8b87-da1e-4a5e-a9d0-19ae2f196eab",
-      "name": "Send handover_notification",
+      "id": "ab1e060a-487e-4c87-a8d7-3319a23b1223",
+      "name": "Send handover_notification1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "V2m0M4Dx02sgWtPw",
+          "name": "360D Dynamic Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('When Executed by Another Workflow').item.json.notification_type }}",
+                    "rightValue": "human_handover",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "7"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Human Handover"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('When Executed by Another Workflow').item.json.notification_type }}",
+                    "rightValue": "reply_reminder",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "8"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Reply Reminder"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        368,
+        912
+      ],
+      "id": "1f5ea136-0098-4dcc-a37f-8619d8e2808b",
+      "name": "360D Router"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://waba-v2.360dialog.io/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"recipient_type\": \"individual\",\n  \"to\": \"{{ $json.whatsapp_number }}\",\n  \"type\": \"template\",\n  \"template\": {\n    \"name\": \"reply_reminder\",\n    \"language\": {\n      \"code\": \"en_US\"\n    },\n    \"components\": [\n      {\n        \"type\": \"body\",\n        \"parameters\": [\n          {\n            \"type\": \"text\",\n            \"text\": \"{{ $('Get Workspace').first().json.workspace_name }}\"\n          }\n        ]\n      },\n      {\n        \"type\": \"button\",\n        \"sub_type\": \"url\",\n        \"index\": \"0\",\n        \"parameters\": [\n          {\n            \"type\": \"text\",\n            \"text\": \"{{ $('When Executed by Another Workflow').first().json.data.url }}\"\n          }\n        ]\n      }\n    ]\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        368,
+        576
+      ],
+      "id": "8e4d093f-3118-4d24-93ba-f29eef0a12aa",
+      "name": "Send reply_reminder",
       "credentials": {
         "httpHeaderAuth": {
           "id": "V2m0M4Dx02sgWtPw",
@@ -49,7 +142,25 @@
       "main": [
         [
           {
-            "node": "Send handover_notification",
+            "node": "360D Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "360D Router": {
+      "main": [
+        [
+          {
+            "node": "Send handover_notification1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send reply_reminder",
             "type": "main",
             "index": 0
           }
@@ -63,7 +174,7 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "b657c035-c97a-4944-bf80-8a43e63f93e0",
+  "versionId": "8c4af9f2-9abe-4697-9062-237a56ad1827",
   "triggerCount": 0,
   "shared": [
     {
