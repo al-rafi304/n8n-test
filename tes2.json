@@ -1,1 +1,173 @@
-{"createdAt":"2025-09-23T19:28:47.643Z","updatedAt":"2025-09-23T19:29:58.826Z","id":"WUPBeU8nVDrXWNBy","name":"tes2","active":false,"isArchived":false,"nodes":[{"parameters":{},"type":"n8n-nodes-base.manualTrigger","typeVersion":1,"position":[0,0],"id":"8196f553-889e-4d25-bcb3-52c526f22828","name":"When clicking ‘Execute workflow’"},{"parameters":{"options":{}},"type":"n8n-nodes-base.httpRequest","typeVersion":4.2,"position":[208,0],"id":"a852e1b8-fa62-4941-88bf-31a0c6c147b6","name":"HTTP Request"}],"connections":{"When clicking ‘Execute workflow’":{"main":[[]]}},"settings":{"executionOrder":"v1"},"staticData":null,"meta":null,"pinData":{},"versionId":"ecb93926-7126-4e4b-9fc9-39c181c28337","triggerCount":0,"shared":[{"createdAt":"2025-09-23T19:28:47.647Z","updatedAt":"2025-09-23T19:28:47.647Z","role":"workflow:owner","workflowId":"WUPBeU8nVDrXWNBy","projectId":"6tAtlxJWCabRStRk","project":{"createdAt":"2025-02-23T09:34:22.834Z","updatedAt":"2025-09-20T11:43:05.000Z","id":"6tAtlxJWCabRStRk","name":"Intellixio","type":"team","icon":{"type":"icon","value":"layer-group"},"description":"","projectRelations":[{"createdAt":"2025-09-20T11:43:05.678Z","updatedAt":"2025-09-20T11:43:05.678Z","userId":"f34baaa0-ad5e-4058-8dd6-4597cbdb4c4b","projectId":"6tAtlxJWCabRStRk","user":{"createdAt":"2025-02-23T09:31:05.569Z","updatedAt":"2025-09-24T10:51:36.000Z","id":"f34baaa0-ad5e-4058-8dd6-4597cbdb4c4b","email":"nazmul@intellixio.com","firstName":"Md","lastName":"Nazmul Hoque Bhuiyan","personalizationAnswers":null,"settings":{"userActivated":true,"easyAIWorkflowOnboarded":true,"firstSuccessfulWorkflowId":"gnnzSL8nJSeJJzsW","userActivatedAt":1742741512234,"npsSurvey":{"responded":true,"lastShownAt":1743747154775}},"disabled":false,"mfaEnabled":false,"lastActiveAt":"2025-09-23","isPending":false}},{"createdAt":"2025-09-20T11:43:05.678Z","updatedAt":"2025-09-20T11:43:05.678Z","userId":"1e68db5b-4913-45af-b443-69532f68ffac","projectId":"6tAtlxJWCabRStRk","user":{"createdAt":"2025-04-13T06:25:33.258Z","updatedAt":"2025-09-23T18:00:19.000Z","id":"1e68db5b-4913-45af-b443-69532f68ffac","email":"arafi304.office@gmail.com","firstName":"Mohammad","lastName":"Al Rafi","personalizationAnswers":null,"settings":{"easyAIWorkflowOnboarded":true,"firstSuccessfulWorkflowId":"SKLCNSSSGove7dt7","userActivated":true,"userActivatedAt":1746352924058,"npsSurvey":{"responded":true,"lastShownAt":1747539770607}},"disabled":false,"mfaEnabled":false,"lastActiveAt":"2025-09-23","isPending":false}},{"createdAt":"2025-09-20T11:43:05.678Z","updatedAt":"2025-09-20T11:43:05.678Z","userId":"9ee433e6-26e5-4c4e-a0a9-059003221711","projectId":"6tAtlxJWCabRStRk","user":{"createdAt":"2025-05-21T06:43:50.821Z","updatedAt":"2025-09-24T06:27:51.000Z","id":"9ee433e6-26e5-4c4e-a0a9-059003221711","email":"sumon.intellixio@gmail.com","firstName":"Zahid Khandaker","lastName":"Sumon","personalizationAnswers":null,"settings":{"easyAIWorkflowOnboarded":true},"disabled":false,"mfaEnabled":false,"lastActiveAt":"2025-09-23","isPending":false}},{"createdAt":"2025-09-20T11:43:05.678Z","updatedAt":"2025-09-20T11:43:05.678Z","userId":"b4a0fd83-613e-45d3-95bc-b8c90438d59e","projectId":"6tAtlxJWCabRStRk","user":{"createdAt":"2025-09-20T11:32:07.300Z","updatedAt":"2025-09-23T02:59:58.000Z","id":"b4a0fd83-613e-45d3-95bc-b8c90438d59e","email":"nazmulofficial@outlook.com","firstName":"Sheikh Mohammad Nazmul","lastName":"Hasan","personalizationAnswers":null,"settings":null,"disabled":false,"mfaEnabled":false,"lastActiveAt":"2025-09-22","isPending":false}}]}}],"tags":[]}
+{
+  "createdAt": "2025-09-23T19:28:47.643Z",
+  "updatedAt": "2025-09-23T19:29:58.826Z",
+  "id": "WUPBeU8nVDrXWNBy",
+  "name": "tes2",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8196f553-889e-4d25-bcb3-52c526f22828",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "a852e1b8-fa62-4941-88bf-31a0c6c147b6",
+      "name": "HTTP Request"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "ecb93926-7126-4e4b-9fc9-39c181c28337",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-23T19:28:47.647Z",
+      "updatedAt": "2025-09-23T19:28:47.647Z",
+      "role": "workflow:owner",
+      "workflowId": "WUPBeU8nVDrXWNBy",
+      "projectId": "6tAtlxJWCabRStRk",
+      "project": {
+        "createdAt": "2025-02-23T09:34:22.834Z",
+        "updatedAt": "2025-09-20T11:43:05.000Z",
+        "id": "6tAtlxJWCabRStRk",
+        "name": "Intellixio",
+        "type": "team",
+        "icon": {
+          "type": "icon",
+          "value": "layer-group"
+        },
+        "description": "",
+        "projectRelations": [
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "f34baaa0-ad5e-4058-8dd6-4597cbdb4c4b",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-02-23T09:31:05.569Z",
+              "updatedAt": "2025-09-24T10:51:36.000Z",
+              "id": "f34baaa0-ad5e-4058-8dd6-4597cbdb4c4b",
+              "email": "nazmul@intellixio.com",
+              "firstName": "Md",
+              "lastName": "Nazmul Hoque Bhuiyan",
+              "personalizationAnswers": null,
+              "settings": {
+                "userActivated": true,
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "gnnzSL8nJSeJJzsW",
+                "userActivatedAt": 1742741512234,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1743747154775
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-23",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "1e68db5b-4913-45af-b443-69532f68ffac",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-04-13T06:25:33.258Z",
+              "updatedAt": "2025-09-23T18:00:19.000Z",
+              "id": "1e68db5b-4913-45af-b443-69532f68ffac",
+              "email": "arafi304.office@gmail.com",
+              "firstName": "Mohammad",
+              "lastName": "Al Rafi",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "SKLCNSSSGove7dt7",
+                "userActivated": true,
+                "userActivatedAt": 1746352924058,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1747539770607
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-23",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "9ee433e6-26e5-4c4e-a0a9-059003221711",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-05-21T06:43:50.821Z",
+              "updatedAt": "2025-09-24T06:27:51.000Z",
+              "id": "9ee433e6-26e5-4c4e-a0a9-059003221711",
+              "email": "sumon.intellixio@gmail.com",
+              "firstName": "Zahid Khandaker",
+              "lastName": "Sumon",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-23",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "b4a0fd83-613e-45d3-95bc-b8c90438d59e",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-09-20T11:32:07.300Z",
+              "updatedAt": "2025-09-23T02:59:58.000Z",
+              "id": "b4a0fd83-613e-45d3-95bc-b8c90438d59e",
+              "email": "nazmulofficial@outlook.com",
+              "firstName": "Sheikh Mohammad Nazmul",
+              "lastName": "Hasan",
+              "personalizationAnswers": null,
+              "settings": null,
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-22",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": []
+}
