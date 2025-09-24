@@ -1,0 +1,692 @@
+{
+  "createdAt": "2025-09-14T11:40:09.518Z",
+  "updatedAt": "2025-09-16T09:29:31.000Z",
+  "id": "bwD62Y6o2nocxoKH",
+  "name": "Conversation Manager",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "tableId": "zw_buyers",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "name",
+              "fieldValue": "={{ $('Input').item.json.buyer_name }}"
+            },
+            {
+              "fieldId": "number",
+              "fieldValue": "={{ $('Input').item.json.buyer_number.trim() }}"
+            },
+            {
+              "fieldId": "source_url",
+              "fieldValue": "={{ $('Input').item.json.source_url }}"
+            },
+            {
+              "fieldId": "source_id",
+              "fieldValue": "={{ $('Input').item.json.source_id }}"
+            },
+            {
+              "fieldId": "source_type",
+              "fieldValue": "={{ $('Input').item.json.source_type }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1968,
+        288
+      ],
+      "id": "08517bcd-4684-4548-a12c-6dc2d761a7e2",
+      "name": "Create buyer",
+      "credentials": {
+        "supabaseApi": {
+          "id": "nbFHgM327xNGSObK",
+          "name": "Supabase ZendoWhisper"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "73bdb257-0693-4908-a14f-fcbb525f91bb",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2144,
+        96
+      ],
+      "id": "41119ddf-5f5d-42e2-8dbc-ea7c65fb35d9",
+      "name": "Buyer Exists?"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "zw_buyers",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "number",
+              "keyValue": "={{ $('Input').first().json.buyer_number.trim() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -2384,
+        96
+      ],
+      "id": "f2f51e9c-474c-4b5f-845b-cd706ff74ba1",
+      "name": "Get buyer",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "nbFHgM327xNGSObK",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\nreturn $('Input').all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2384,
+        288
+      ],
+      "id": "b9d6a0a6-4558-4193-8c7a-e8d80af35caf",
+      "name": "Return Variables"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Error creating conversation"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -1440,
+        320
+      ],
+      "id": "41f0ebcd-0cc6-4fc7-b0d4-0252762f7c85",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ddb44f23-4caa-4f8a-9d11-96da171b3af9",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "duplicate key",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "97d39f38-cd90-4f4d-9692-bf4e660d94b2",
+              "leftValue": "={{ $('Define Variables').item.json.stop_convo_duplicate_check }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1632,
+        304
+      ],
+      "id": "08e99195-d542-401e-ad94-9409407da732",
+      "name": "Duplicate Error?"
+    },
+    {
+      "parameters": {
+        "tableId": "conversations",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "workspace_id",
+              "fieldValue": "={{ $('Input').item.json.workspace_id }}"
+            },
+            {
+              "fieldId": "buyer_id",
+              "fieldValue": "={{ $('Buyer').item.json.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1152,
+        272
+      ],
+      "id": "7b9aae57-6f08-41e5-9e7e-f08ad73b3ffa",
+      "name": "Create Convo",
+      "credentials": {
+        "supabaseApi": {
+          "id": "nbFHgM327xNGSObK",
+          "name": "Supabase ZendoWhisper"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c4ff8e29-e4fe-44c9-8edc-210ac1da0f24",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1312,
+        80
+      ],
+      "id": "c5ac159a-8ae0-4db8-b4d8-aa314a4f1811",
+      "name": "Convo exists"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "conversations",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "workspace_id",
+              "keyValue": "={{ $('Input').item.json.workspace_id }}"
+            },
+            {
+              "keyName": "buyer_id",
+              "keyValue": "={{ $('Buyer').item.json.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1536,
+        80
+      ],
+      "id": "ed9c9eb7-0ea0-475d-951f-4b62aec39bf2",
+      "name": "Get convo",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "nbFHgM327xNGSObK",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1760,
+        80
+      ],
+      "id": "3b1b74ce-93e1-4e0c-a054-1eb4e1a37915",
+      "name": "Buyer"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "buyer_number"
+            },
+            {
+              "name": "workspace_id"
+            },
+            {
+              "name": "buyer_name"
+            },
+            {
+              "name": "source_id"
+            },
+            {
+              "name": "source_url"
+            },
+            {
+              "name": "source_type"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -2624,
+        96
+      ],
+      "id": "3748366e-e84e-4c58-96d9-0d0f55627270",
+      "name": "Input"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -992,
+        64
+      ],
+      "id": "9ea75c06-4ac2-4784-9630-0c34b43fd640",
+      "name": "Convo"
+    },
+    {
+      "parameters": {
+        "jsCode": "var convo = $('Convo').first().json;\nconvo.buyer = $('Buyer').first().json;\n\nreturn [{json: convo}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -800,
+        64
+      ],
+      "id": "13cdae0c-04a1-4fc4-90c4-a0414337ea7e",
+      "name": "Join Convo & Buyer"
+    }
+  ],
+  "connections": {
+    "Create buyer": {
+      "main": [
+        [
+          {
+            "node": "Buyer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Duplicate Error?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buyer Exists?": {
+      "main": [
+        [
+          {
+            "node": "Buyer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create buyer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get buyer": {
+      "main": [
+        [
+          {
+            "node": "Buyer Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Return Variables": {
+      "main": [
+        [
+          {
+            "node": "Get buyer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Duplicate Error?": {
+      "main": [
+        [
+          {
+            "node": "Return Variables",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Convo": {
+      "main": [
+        [
+          {
+            "node": "Convo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Duplicate Error?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convo exists": {
+      "main": [
+        [
+          {
+            "node": "Convo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Convo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get convo": {
+      "main": [
+        [
+          {
+            "node": "Convo exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buyer": {
+      "main": [
+        [
+          {
+            "node": "Get convo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input": {
+      "main": [
+        [
+          {
+            "node": "Get buyer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convo": {
+      "main": [
+        [
+          {
+            "node": "Join Convo & Buyer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "diJYcEVHxO6GUcaA"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Input": [
+      {
+        "json": {
+          "buyer_number": "+8801862874376",
+          "workspace_id": "cac090ea-875a-4b80-b741-75f0029956e6",
+          "buyer_name": "Rafi Test 2",
+          "source_id": "120231504595510355",
+          "source_url": "https://fb.me/6U5OEt5Db",
+          "source_type": "ad"
+        }
+      }
+    ]
+  },
+  "versionId": "89c3df20-31d3-4004-8367-85a4df4692c4",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-14T11:40:09.522Z",
+      "updatedAt": "2025-09-14T11:40:09.522Z",
+      "role": "workflow:owner",
+      "workflowId": "bwD62Y6o2nocxoKH",
+      "projectId": "6tAtlxJWCabRStRk",
+      "project": {
+        "createdAt": "2025-02-23T09:34:22.834Z",
+        "updatedAt": "2025-09-20T11:43:05.000Z",
+        "id": "6tAtlxJWCabRStRk",
+        "name": "Intellixio",
+        "type": "team",
+        "icon": {
+          "type": "icon",
+          "value": "layer-group"
+        },
+        "description": "",
+        "projectRelations": [
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "f34baaa0-ad5e-4058-8dd6-4597cbdb4c4b",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-02-23T09:31:05.569Z",
+              "updatedAt": "2025-09-24T10:51:36.000Z",
+              "id": "f34baaa0-ad5e-4058-8dd6-4597cbdb4c4b",
+              "email": "nazmul@intellixio.com",
+              "firstName": "Md",
+              "lastName": "Nazmul Hoque Bhuiyan",
+              "personalizationAnswers": null,
+              "settings": {
+                "userActivated": true,
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "gnnzSL8nJSeJJzsW",
+                "userActivatedAt": 1742741512234,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1743747154775
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-23",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "1e68db5b-4913-45af-b443-69532f68ffac",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-04-13T06:25:33.258Z",
+              "updatedAt": "2025-09-23T18:00:19.000Z",
+              "id": "1e68db5b-4913-45af-b443-69532f68ffac",
+              "email": "arafi304.office@gmail.com",
+              "firstName": "Mohammad",
+              "lastName": "Al Rafi",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "SKLCNSSSGove7dt7",
+                "userActivated": true,
+                "userActivatedAt": 1746352924058,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1747539770607
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-23",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "9ee433e6-26e5-4c4e-a0a9-059003221711",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-05-21T06:43:50.821Z",
+              "updatedAt": "2025-09-24T06:27:51.000Z",
+              "id": "9ee433e6-26e5-4c4e-a0a9-059003221711",
+              "email": "sumon.intellixio@gmail.com",
+              "firstName": "Zahid Khandaker",
+              "lastName": "Sumon",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-23",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "b4a0fd83-613e-45d3-95bc-b8c90438d59e",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-09-20T11:32:07.300Z",
+              "updatedAt": "2025-09-23T02:59:58.000Z",
+              "id": "b4a0fd83-613e-45d3-95bc-b8c90438d59e",
+              "email": "nazmulofficial@outlook.com",
+              "firstName": "Sheikh Mohammad Nazmul",
+              "lastName": "Hasan",
+              "personalizationAnswers": null,
+              "settings": null,
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-22",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-09-18T18:00:49.195Z",
+      "updatedAt": "2025-09-18T18:00:49.195Z",
+      "id": "IeFAhy5ppA75XMXr",
+      "name": "used-by:gzWevmxOQIphVS8W"
+    },
+    {
+      "createdAt": "2025-09-18T18:00:49.134Z",
+      "updatedAt": "2025-09-18T18:00:49.134Z",
+      "id": "jcHZY4kmokcvmdXv",
+      "name": "used-by:51weKUjgAClHOJIj"
+    },
+    {
+      "createdAt": "2025-09-18T18:00:49.102Z",
+      "updatedAt": "2025-09-18T18:00:49.102Z",
+      "id": "sX6jtH5cuspWTdkZ",
+      "name": "used-by:6Sl6wzKELXkaajt6"
+    },
+    {
+      "createdAt": "2025-09-18T18:00:49.164Z",
+      "updatedAt": "2025-09-18T18:00:49.164Z",
+      "id": "tJTCHkI6gOWtQou9",
+      "name": "used-by:OdZV3Ragd64eTaV2"
+    },
+    {
+      "createdAt": "2025-06-17T14:59:14.275Z",
+      "updatedAt": "2025-06-17T14:59:14.275Z",
+      "id": "zsgptq1gYNwy4XnO",
+      "name": "used-by:pMW2u20Asbm1YVxJ"
+    }
+  ]
+}
