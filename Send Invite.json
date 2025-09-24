@@ -1,0 +1,1146 @@
+{
+  "createdAt": "2025-07-20T05:24:29.605Z",
+  "updatedAt": "2025-09-20T15:51:30.000Z",
+  "id": "HFvmxovlmOxMiKum",
+  "name": "Send Invite",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "send-invite",
+        "authentication": "jwtAuth",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1520,
+        832
+      ],
+      "id": "b5903cb5-7c6c-42c3-bb22-3a131a245d0c",
+      "name": "Webhook",
+      "webhookId": "27d0224f-d547-4855-94b7-2716ae793d91",
+      "credentials": {
+        "jwtAuth": {
+          "id": "LZMf16oPiGJ30wWU",
+          "name": "n8n Webhook JWT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dcd409e6-ffc8-4e7e-a10a-bdf8bee17a19",
+              "name": "workspace_id",
+              "value": "={{ $json.jwtPayload.workspace_id }}",
+              "type": "string"
+            },
+            {
+              "id": "6ac9b68d-c50c-4aa3-87ea-0c6de4948e62",
+              "name": "email",
+              "value": "={{ $json.body.email.toLowerCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "bd15ac5f-5729-443b-aaed-0e7e1526efd9",
+              "name": "role",
+              "value": "={{ $json.body.role }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": "",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1072,
+        736
+      ],
+      "id": "6477bd31-f867-4dda-9425-735356001d54",
+      "name": "Extract Data"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"error\": \"Missing necessary request data\"\n}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -1072,
+        928
+      ],
+      "id": "0b6fba5a-2ae9-40d2-9856-f7fff9d8f281",
+      "name": "Error Reponse"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ae5f2439-d2b0-403c-af82-a3465e729f2a",
+              "leftValue": "={{ $json.jwtPayload.workspace_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "016b2974-597f-4480-8086-4f143ff998c0",
+              "leftValue": "={{ $json.body.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "edcca905-80f8-4b56-9959-d2b55e2b5148",
+              "leftValue": "={{ $json.body.role }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "2b312807-67ba-49fb-8ac1-abf9b508d0bc",
+              "leftValue": "=",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1296,
+        832
+      ],
+      "id": "7ae6ca87-01d7-4b10-b908-c1c45dc0ba1b",
+      "name": "Check Request Data"
+    },
+    {
+      "parameters": {
+        "fromEmail": "ZendoWhisper Support <support@zendowhisper.com>",
+        "toEmail": "={{ $('Extract Data').first().json.email }}",
+        "subject": "=You've been invited to join the {{ $('Get Workspace').first().json.workspace_name }} workspace on ZendoWhisper",
+        "html": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Invitation to ZendoWhisper</title>\n    <style type=\"text/css\">\n        /* Basic resets for email clients */\n        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }\n        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }\n        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }\n        body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f8f8f8; }\n    </style>\n</head>\n<body style=\"margin: 0 !important; padding: 0 !important; background-color: #f8f8f8;\">\n\n    <!-- Main Table Wrapper -->\n    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n        <tr>\n            <td align=\"center\" style=\"padding: 20px;\">\n                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width: 600px; background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px;\">\n                    \n                    <!-- Main Content Section -->\n                    <tr>\n                        <td align=\"left\" style=\"padding: 40px; font-family: Arial, Helvetica, sans-serif; font-size: 16px; line-height: 24px; color: #333333;\">\n                            \n                            <!-- Email Body -->\n                            <p style=\"margin: 0 0 15px 0;\">Hi,</p>\n                            \n                            <p style=\"margin: 0 0 25px 0;\">\n                                You've received an invitation to join the <strong>{{ $('Get Workspace').first().json.workspace_name }}</strong> workspace on ZendoWhisper as a(n) <strong>{{ $('Extract Data').item.json.role }}</strong>.\n                            </p>\n                            \n                            <p style=\"margin: 0 0 25px 0;\">\n                                To get started and accept your invitation, click the secure button below. This link is unique to you and will expire in 7 days for security purposes.\n                            </p>\n\n                            <!-- Button Section -->\n                            <table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">\n                                <tr>\n                                    <td align=\"center\">\n                                        <!-- The Button -->\n                                        <table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n                                            <tr>\n                                                <td align=\"center\" style=\"border-radius: 8px; background-color: #5a4ad1;\">\n                                                    <a href=\"{{ $('Generate Token').first().json.inviteUrl }}\" target=\"_blank\" style=\"font-size: 16px; font-family: Arial, Helvetica, sans-serif; font-weight: bold; color: #ffffff; text-decoration: none; padding: 14px 28px; border: 1px solid #5a4ad1; border-radius: 8px; display: inline-block;\">Accept Invitation & Join Workspace</a>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </td>\n                                </tr>\n                            </table>\n\n                            <p style=\"margin: 25px 0 25px 0; text-align: center; font-size: 14px; color: #666666;\">\n                                If the button above doesn't work, please copy and paste this URL into your browser:<br>\n                                <a href=\"{{ $('Generate Token').first().json.inviteUrl }}\" target=\"_blank\" style=\"color: #5a4ad1; text-decoration: underline;\">{{ $('Generate Token').first().json.inviteUrl }}</a>\n                            </p>\n\n                            <p style=\"margin: 0 0 25px 0; font-size: 14px; color: #666666;\">\n                                If you weren’t expecting this invitation, you can disregard this email. If you have any questions or believe this was sent in error, please feel free to contact our support team at <a href=\"mailto:support@zendowhisper.com\" style=\"color: #5a4ad1; text-decoration: underline;\">support@zendowhisper.com</a>.\n                            </p>\n\n                            <p style=\"margin: 0;\">\n                                Best regards,<br>\n                                The ZendoWhisper Team\n                            </p>\n\n                        </td>\n                    </tr>\n                </table>\n                <!--[if (gte mso 9)|(IE)]>\n                </td>\n                </tr>\n                </table>\n                <![endif]-->\n            </td>\n        </tr>\n    </table>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1168,
+        640
+      ],
+      "id": "5fef1a97-33af-41c3-bec6-161d62d9a7cc",
+      "name": "Send email",
+      "webhookId": "33f47632-5353-4366-bcc0-3c11184d3359",
+      "credentials": {
+        "smtp": {
+          "id": "mLnhX8F0DlHvTY8N",
+          "name": "Zoho SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\n\nconst token = crypto.randomBytes(32).toString('hex');\n\nconst tokenHash = crypto.createHash('sha256').update(token).digest('hex');\n\nconst inviteUrl = \"https://app.zendowhisper.com/accept?token=\" + token;\n\nfor (const item of $input.all()) {\n  item.json.token = token;\n  item.json.tokenHash = tokenHash\n  item.json.inviteUrl = inviteUrl\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        640
+      ],
+      "id": "aa8efe20-cb0e-4a93-b5a8-5a5c6fe71187",
+      "name": "Generate Token"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "workspace_invitations",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Get Invite with Pending').item.json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "created_at",
+              "fieldValue": "={{ $now }}"
+            },
+            {
+              "fieldId": "expires_at",
+              "fieldValue": "={{ $now.plus(7, 'days') }}"
+            },
+            {
+              "fieldId": "token",
+              "fieldValue": "={{ $json.tokenHash }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        496,
+        352
+      ],
+      "id": "cc375c7e-2945-4eb0-8d1e-cf9aa863562e",
+      "name": "Update Invite",
+      "credentials": {
+        "supabaseApi": {
+          "id": "nbFHgM327xNGSObK",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "ZendoWhisper Support <support@zendowhisper.com>",
+        "toEmail": "={{ $('Extract Data').first().json.email }}",
+        "subject": "=You've been invited to join the {{ $('Get Workspace').first().json.workspace_name }} workspace on ZendoWhisper",
+        "html": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Invitation to ZendoWhisper</title>\n    <style type=\"text/css\">\n        /* Basic resets for email clients */\n        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }\n        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }\n        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }\n        body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f8f8f8; }\n    </style>\n</head>\n<body style=\"margin: 0 !important; padding: 0 !important; background-color: #f8f8f8;\">\n\n    <!-- Main Table Wrapper -->\n    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n        <tr>\n            <td align=\"center\" style=\"padding: 20px;\">\n                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width: 600px; background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px;\">\n                    \n                    <!-- Main Content Section -->\n                    <tr>\n                        <td align=\"left\" style=\"padding: 40px; font-family: Arial, Helvetica, sans-serif; font-size: 16px; line-height: 24px; color: #333333;\">\n                            \n                            <!-- Email Body -->\n                            <p style=\"margin: 0 0 15px 0;\">Hi,</p>\n                            \n                            <p style=\"margin: 0 0 25px 0;\">\n                                You've received an invitation to join the <strong>{{ $('Get Workspace').first().json.workspace_name }}</strong> workspace on ZendoWhisper as a(n) <strong>{{ $('Extract Data').first().json.role }}</strong>.\n                            </p>\n                            \n                            <p style=\"margin: 0 0 25px 0;\">\n                                To get started and accept your invitation, click the secure button below. This link is unique to you and will expire in 7 days for security purposes.\n                            </p>\n\n                            <!-- Button Section -->\n                            <table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">\n                                <tr>\n                                    <td align=\"center\">\n                                        <!-- The Button -->\n                                        <table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n                                            <tr>\n                                                <td align=\"center\" style=\"border-radius: 8px; background-color: #5a4ad1;\">\n                                                    <a href=\"{{ $('Generate Resend Token').first().json.inviteUrl }}\" target=\"_blank\" style=\"font-size: 16px; font-family: Arial, Helvetica, sans-serif; font-weight: bold; color: #ffffff; text-decoration: none; padding: 14px 28px; border: 1px solid #5a4ad1; border-radius: 8px; display: inline-block;\">Accept Invitation & Join Workspace</a>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </td>\n                                </tr>\n                            </table>\n\n                            <p style=\"margin: 25px 0 25px 0; text-align: center; font-size: 14px; color: #666666;\">\n                                If the button above doesn't work, please copy and paste this URL into your browser:<br>\n                                <a href=\"{{ $('Generate Resend Token').first().json.inviteUrl }}\" target=\"_blank\" style=\"color: #5a4ad1; text-decoration: underline;\">{{ $('Generate Resend Token').first().json.inviteUrl }}</a>\n                            </p>\n\n                            <p style=\"margin: 0 0 25px 0; font-size: 14px; color: #666666;\">\n                                If you weren’t expecting this invitation, you can disregard this email. If you have any questions or believe this was sent in error, please feel free to contact our support team at <a href=\"mailto:support@zendowhisper.com\" style=\"color: #5a4ad1; text-decoration: underline;\">support@zendowhisper.com</a>.\n                            </p>\n\n                            <p style=\"margin: 0;\">\n                                Best regards,<br>\n                                The ZendoWhisper Team\n                            </p>\n\n                        </td>\n                    </tr>\n                </table>\n                <!--[if (gte mso 9)|(IE)]>\n                </td>\n                </tr>\n                </table>\n                <![endif]-->\n            </td>\n        </tr>\n    </table>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        352
+      ],
+      "id": "4bcf4c54-201a-45d6-8834-695348c06322",
+      "name": "Send email1",
+      "webhookId": "33f47632-5353-4366-bcc0-3c11184d3359",
+      "credentials": {
+        "smtp": {
+          "id": "mLnhX8F0DlHvTY8N",
+          "name": "Zoho SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\n\nconst token = crypto.randomBytes(32).toString('hex');\n\nconst tokenHash = crypto.createHash('sha256').update(token).digest('hex');\n\nconst inviteUrl = \"https://app.zendowhisper.com/accept?token=\" + token;\n\nfor (const item of $input.all()) {\n  item.json.token = token;\n  item.json.tokenHash = tokenHash\n  item.json.inviteUrl = inviteUrl\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        272,
+        352
+      ],
+      "id": "27267074-2966-4dcc-b499-c84cf7f139d4",
+      "name": "Generate Resend Token"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": false,\n  \"error\": \"RateLimitExceeded\",\n  \"message\": \"You must wait before sending another invitation.\",\n  \"cooldown\": {\n    \"totalSeconds\": 60,\n    \"secondsRemaining\": {{ Math.round(60 - ($now - DateTime.fromISO($('Get Invite with Pending').item.json.created_at)) / 1000)}}\n  }\n}",
+        "options": {
+          "responseCode": 429
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        272,
+        544
+      ],
+      "id": "452a489c-73a5-408a-8238-8bbd946b2820",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": true,\n  \"message\": \"Invitation has been sent successfully.\"\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        944,
+        352
+      ],
+      "id": "16e1ddfc-6bc4-437e-b4a4-91ae7d495fa9",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": true,\n  \"message\": \"Invitation has been sent successfully.\"\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1392,
+        640
+      ],
+      "id": "d1ac4ec0-223d-49b9-a69b-2345aa8bec78",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "tableId": "workspace_invitations",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "email",
+              "fieldValue": "={{ $('Extract Data').first().json.email }}"
+            },
+            {
+              "fieldId": "workspace_id",
+              "fieldValue": "={{ $('Extract Data').item.json.workspace_id }}"
+            },
+            {
+              "fieldId": "expires_at",
+              "fieldValue": "={{ $now.plus(7, 'days') }}"
+            },
+            {
+              "fieldId": "token",
+              "fieldValue": "={{ $json.tokenHash }}"
+            },
+            {
+              "fieldId": "role",
+              "fieldValue": "={{ $('Extract Data').first().json.role }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        944,
+        640
+      ],
+      "id": "cb5555a8-6b69-4cf6-a341-ef15f44efeac",
+      "name": "Create Invitation",
+      "credentials": {
+        "supabaseApi": {
+          "id": "nbFHgM327xNGSObK",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ Object.keys($json).length !== 0  && DateTime.fromISO($json.created_at) < $now.minus(60, 'seconds')}}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "c5e6ebe1-d5d8-4bc9-bfdc-27d1d297e826"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Resend"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d9d5644e-c569-44f7-b5db-251d0e1bc829",
+                    "leftValue": "={{ Object.keys($json).length !== 0  && DateTime.fromISO($json.created_at) > $now.minus(60, 'seconds')}}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Resend Timeout"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "80e794ce-dcc0-4bb7-a1e0-2365a53deea9",
+                    "leftValue": "={{ $json }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "empty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "New"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        48,
+        608
+      ],
+      "id": "6755d917-ca46-4aa9-9bd3-42ae6daa2e2c",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4c173e9b-c3f2-42bb-b54d-90fd0b94618a",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -400,
+        736
+      ],
+      "id": "349e7147-dfea-4ca2-8db8-ae209a792c98",
+      "name": "Doesn't Exist"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"error\": \"This email is already a member\"\n}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -176,
+        832
+      ],
+      "id": "1c677fbe-7f6b-4da8-9a24-3b2e2cf2ef8d",
+      "name": "Respond to Webhook3",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "errorMessage": "Investigate: Edge case detected for Send Invite workflow"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        272,
+        928
+      ],
+      "id": "03b417e6-eb62-4dbc-9cec-254605e99356",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT *\nFROM workspace_invitations\nWHERE workspace_id = $1 AND email = $2 AND status = 'pending' AND expires_at > $3;",
+        "options": {
+          "queryReplacement": "=[{{ $('Extract Data').item.json.workspace_id }}, {{ $('Extract Data').item.json.email }}, {{ $now }}]"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -176,
+        640
+      ],
+      "id": "9c62e88c-b0c6-43c8-83a0-1bbf163264d2",
+      "name": "Get Invite with Pending",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "NmBd5jRogFqahwb7",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "workspace_members",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "workspace_id",
+              "keyValue": "={{ $('Extract Data').item.json.workspace_id }}"
+            },
+            {
+              "keyName": "email",
+              "keyValue": "={{ $('Extract Data').item.json.email }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        736
+      ],
+      "id": "d3e00226-26e0-4229-bc46-c2ec27501420",
+      "name": "Get Member",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "nbFHgM327xNGSObK",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT workspace_name\nFROM workspaces\nWHERE id = $1",
+        "options": {
+          "queryReplacement": "=[{{ $('Extract Data').item.json.workspace_id }}]"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -848,
+        736
+      ],
+      "id": "b29394dc-327c-4962-aa51-f73e6a3ab579",
+      "name": "Get Workspace",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "NmBd5jRogFqahwb7",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  COUNT(i.id) AS pending_invites,\n  s.seat_count,\n  s.seat_limit\nFROM subscriptions s\nLEFT JOIN workspace_invitations i \n  ON i.workspace_id = s.workspace_id \n  AND i.status = 'pending'\nWHERE s.workspace_id = $1\nGROUP BY s.seat_count, s.seat_limit;",
+        "options": {
+          "queryReplacement": "=[{{ $('Extract Data').item.json.workspace_id }}, {{ $('Extract Data').item.json.email }}]"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        272,
+        736
+      ],
+      "id": "e975e199-6491-4c5b-af81-e10e978946fe",
+      "name": "Get Seat Stats",
+      "credentials": {
+        "postgres": {
+          "id": "NmBd5jRogFqahwb7",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cb3fb5f7-3fa8-4cfa-b6f2-0cadaa922980",
+              "leftValue": "={{ Number($json.seat_count) + Number($json.pending_invites) }}",
+              "rightValue": "={{ Number($json.seat_limit) }}",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        496,
+        736
+      ],
+      "id": "0f3a4ce0-f6e4-4d83-b994-2d6149aad083",
+      "name": "Seat usage OK"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"error\": \"Seat limit exceeded\"\n}",
+        "options": {
+          "responseCode": 409
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        720,
+        832
+      ],
+      "id": "dddd7dc4-220b-4c84-a2b1-d6d8d9e159eb",
+      "name": "409 Conflict Response"
+    }
+  ],
+  "connections": {
+    "Check Existence": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Check Request Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Data": {
+      "main": [
+        [
+          {
+            "node": "Get Workspace",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Request Data": {
+      "main": [
+        [
+          {
+            "node": "Extract Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Reponse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send email": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Token": {
+      "main": [
+        [
+          {
+            "node": "Create Invitation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Invite": {
+      "main": [
+        [
+          {
+            "node": "Send email1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send email1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Resend Token": {
+      "main": [
+        [
+          {
+            "node": "Update Invite",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Invitation": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Generate Resend Token",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Seat Stats",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Doesn't Exist": {
+      "main": [
+        [
+          {
+            "node": "Get Invite with Pending",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Invite with Pending": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Member": {
+      "main": [
+        [
+          {
+            "node": "Doesn't Exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Workspace": {
+      "main": [
+        [
+          {
+            "node": "Get Member",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Seat Stats": {
+      "main": [
+        [
+          {
+            "node": "Seat usage OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seat usage OK": {
+      "main": [
+        [
+          {
+            "node": "Generate Token",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "409 Conflict Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "409 Conflict Response": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "diJYcEVHxO6GUcaA"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When clicking ‘Test workflow’": [
+      {
+        "json": {
+          "jwtPayload": {
+            "workspace_id": "86e1c196-9b80-4f85-ac7b-190fe3efb5af"
+          },
+          "body": {
+            "email": "arafi304.office@gmail.com",
+            "role": "member"
+          }
+        }
+      }
+    ],
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "intellixio.app.n8n.cloud",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+            "content-length": "46",
+            "accept": "*/*",
+            "accept-encoding": "gzip, br",
+            "accept-language": "en-US,en;q=0.9",
+            "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ3b3Jrc3BhY2VfaWQiOiJhOTkzZjkyNi0xOTc5LTRmZjItOGU4Ny03NTJkZjJhZjA1YTYiLCJpYXQiOjE3NTgzNzg3MDAsImV4cCI6MTc1ODM3OTAwMH0.obQuA5JiTFvkca39ULowaF_PbVkN8w2xE2a6FQ6PDaQ",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "103.154.236.49",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "BD",
+            "cf-ray": "9822071c26d17c40-DAC",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "origin": "https://app.zendowhisper.com",
+            "priority": "u=1, i",
+            "referer": "https://app.zendowhisper.com/",
+            "sec-ch-ua": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Linux\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "x-forwarded-for": "103.154.236.49, 162.158.9.143",
+            "x-forwarded-host": "intellixio.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-25-79cb8df8b5-pgfsj",
+            "x-is-trusted": "yes",
+            "x-real-ip": "103.154.236.49"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "email": "arafi3042@gmail.com",
+            "role": "member"
+          },
+          "webhookUrl": "https://intellixio.app.n8n.cloud/webhook/send-invite",
+          "executionMode": "production",
+          "jwtPayload": {
+            "workspace_id": "a993f926-1979-4ff2-8e87-752df2af05a6",
+            "iat": 1758378700,
+            "exp": 1758379000
+          }
+        }
+      }
+    ]
+  },
+  "versionId": "9b0aa04f-c19c-49df-a36c-0d7321afe65b",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-07-20T05:24:29.608Z",
+      "updatedAt": "2025-07-20T05:24:29.608Z",
+      "role": "workflow:owner",
+      "workflowId": "HFvmxovlmOxMiKum",
+      "projectId": "6tAtlxJWCabRStRk",
+      "project": {
+        "createdAt": "2025-02-23T09:34:22.834Z",
+        "updatedAt": "2025-09-20T11:43:05.000Z",
+        "id": "6tAtlxJWCabRStRk",
+        "name": "Intellixio",
+        "type": "team",
+        "icon": {
+          "type": "icon",
+          "value": "layer-group"
+        },
+        "description": "",
+        "projectRelations": [
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "f34baaa0-ad5e-4058-8dd6-4597cbdb4c4b",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-02-23T09:31:05.569Z",
+              "updatedAt": "2025-09-24T10:51:36.000Z",
+              "id": "f34baaa0-ad5e-4058-8dd6-4597cbdb4c4b",
+              "email": "nazmul@intellixio.com",
+              "firstName": "Md",
+              "lastName": "Nazmul Hoque Bhuiyan",
+              "personalizationAnswers": null,
+              "settings": {
+                "userActivated": true,
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "gnnzSL8nJSeJJzsW",
+                "userActivatedAt": 1742741512234,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1743747154775
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-23",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "1e68db5b-4913-45af-b443-69532f68ffac",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-04-13T06:25:33.258Z",
+              "updatedAt": "2025-09-23T18:00:19.000Z",
+              "id": "1e68db5b-4913-45af-b443-69532f68ffac",
+              "email": "arafi304.office@gmail.com",
+              "firstName": "Mohammad",
+              "lastName": "Al Rafi",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "SKLCNSSSGove7dt7",
+                "userActivated": true,
+                "userActivatedAt": 1746352924058,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1747539770607
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-23",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "9ee433e6-26e5-4c4e-a0a9-059003221711",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-05-21T06:43:50.821Z",
+              "updatedAt": "2025-09-24T06:27:51.000Z",
+              "id": "9ee433e6-26e5-4c4e-a0a9-059003221711",
+              "email": "sumon.intellixio@gmail.com",
+              "firstName": "Zahid Khandaker",
+              "lastName": "Sumon",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-23",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "b4a0fd83-613e-45d3-95bc-b8c90438d59e",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-09-20T11:32:07.300Z",
+              "updatedAt": "2025-09-23T02:59:58.000Z",
+              "id": "b4a0fd83-613e-45d3-95bc-b8c90438d59e",
+              "email": "nazmulofficial@outlook.com",
+              "firstName": "Sheikh Mohammad Nazmul",
+              "lastName": "Hasan",
+              "personalizationAnswers": null,
+              "settings": null,
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-22",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-06-16T07:19:51.761Z",
+      "updatedAt": "2025-06-16T07:19:51.761Z",
+      "id": "6sRNr8zdcUko3I9r",
+      "name": "status:production"
+    },
+    {
+      "createdAt": "2025-06-16T06:04:56.727Z",
+      "updatedAt": "2025-06-16T06:04:56.727Z",
+      "id": "BNfJvg7hpduHp14P",
+      "name": "type:main"
+    },
+    {
+      "createdAt": "2025-06-16T06:08:54.594Z",
+      "updatedAt": "2025-06-16T06:08:54.594Z",
+      "id": "BrQ4X90Rx15bv7gd",
+      "name": "trigger:webhook"
+    },
+    {
+      "createdAt": "2025-06-16T06:09:52.153Z",
+      "updatedAt": "2025-06-16T06:09:52.153Z",
+      "id": "CkU7pHGuc29ubXR1",
+      "name": "owner:rafi"
+    }
+  ]
+}
