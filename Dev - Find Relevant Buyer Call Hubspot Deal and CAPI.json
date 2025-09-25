@@ -1,0 +1,1010 @@
+{
+  "createdAt": "2025-09-25T11:54:03.725Z",
+  "updatedAt": "2025-09-25T14:08:19.000Z",
+  "id": "QKRsOQtuaBWilaDt",
+  "name": "Dev - Find Relevant Buyer Call Hubspot Deal and CAPI",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "inputText": "=here is the given summary:\n\n<summary>\n\n{{ $json.summary }}\n\n</summary>",
+        "options": {
+          "categories": "Interested, Neutral, Not_Interested",
+          "systemPromptTemplate": "=You are highly intelligent and accurate sentiment analyzer. \n\nYou will be given a summary of a conversation with a potential customer. Based on the content, tone, and intent expressed in the summary, classify the lead into one of the following categories:\n\n- Interested → Indicates a Market Qualified Lead (MQL) showing clear intent, engagement, or readiness to explore solutions.\n- Neutral → Shows mild curiosity or passive engagement, but no clear buying signals.\n- Not_Interested → Expresses disinterest, rejection, or lack of relevance.\n\nYour goal is to identify whether the lead is MQL by selecting the appropriate category. Only classify as \"Interested\" if the summary shows strong buying signals or solution-seeking behavior.\n\nIf the whatsApp display name is available, include it in the analysis as extra context about the lead.\n\n-The whatsApp display name can be personal or business-like.\n-If business-like, consider it a potential signal of professionalism and intent for Market Qualified Lead (MQL).\n-Emojis may appear, treat them as neutral.\n\n{{ $('input').first().json.buyer_name &&                         $('input').first().json.buyer_name != \"\" \n   ? \n\"whatsApp display name : \"+$('input').first().json.buyer_name\n   :\n   \"whatsApp display name : not available\" \n}}\n\nAnalyze the sentiment of the provided text. \n\nCategorize it into one of the following: {categories}. Use the provided formatting instructions. Only output the JSON."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.sentimentAnalysis",
+      "typeVersion": 1.1,
+      "position": [
+        1136,
+        -80
+      ],
+      "id": "6171455f-9ced-425a-b28e-4a5a0ed33840",
+      "name": "Sentiment Analysis"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "buyer_number"
+            },
+            {
+              "name": "buyer_name"
+            },
+            {
+              "name": "message"
+            },
+            {
+              "name": "conversation_id"
+            },
+            {
+              "name": "workspace_id"
+            },
+            {
+              "name": "source_url"
+            },
+            {
+              "name": "source_id"
+            },
+            {
+              "name": "source_type"
+            },
+            {
+              "name": "ctwa_clid"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        16,
+        208
+      ],
+      "id": "25caba34-5048-473a-a3db-3d3ddb484034",
+      "name": "input"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "dKGoTJLnI8UwSwsX",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/dKGoTJLnI8UwSwsX",
+          "cachedResultName": "Intellixio — Conversation Summary"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "conversation_id": "={{ $('input').first().json.conversation_id }}",
+            "source_url": "={{ $('input').first().json.source_url }}"
+          },
+          "matchingColumns": [
+            "conversation_id"
+          ],
+          "schema": [
+            {
+              "id": "conversation_id",
+              "displayName": "conversation_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "source_url",
+              "displayName": "source_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        688,
+        208
+      ],
+      "id": "948773a7-ed34-4a40-9562-ad77118777ef",
+      "name": "Call 'Conversation Summary'"
+    },
+    {
+      "parameters": {
+        "errorMessage": "={{ $json.error }}"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        352
+      ],
+      "id": "f21ee747-6cc7-4275-b324-5a6707ea5519",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        176
+      ],
+      "id": "847aab70-ba75-4077-8c5f-5e70c093c929",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "zVVusEgplKXe1H26",
+          "name": "Google Gemini(PaLM) Api account 2 (Dev)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "IZXqlFYLp2ohjAl5",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/IZXqlFYLp2ohjAl5",
+          "cachedResultName": "Intellixio — HubSpot Deal"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "number": "={{ $('input').first().json.buyer_number }}",
+            "source_url": "={{ $('input').first().json.source_url }}",
+            "source_id": "={{ $('input').first().json.source_id }}",
+            "source_type": "={{ $('input').first().json.source_type }}",
+            "deal_stage": 1169086006,
+            "ctwa_clid": "={{ $('input').first().json.ctwa_clid }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "number",
+              "displayName": "number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "source_url",
+              "displayName": "source_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "source_id",
+              "displayName": "source_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "source_type",
+              "displayName": "source_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "ctwa_clid",
+              "displayName": "ctwa_clid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "deal_stage",
+              "displayName": "deal_stage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1952,
+        -48
+      ],
+      "id": "1688e928-0013-4dff-952b-615fe7db86b1",
+      "name": "Call 'HubSpot Deal'"
+    },
+    {
+      "parameters": {
+        "content": "## Marketing Engaged (MQL)\n\n## 1169086006",
+        "height": 144,
+        "width": 512,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1632,
+        -48
+      ],
+      "id": "aa279082-80b3-45cc-b5d6-09a91f60c2e1",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        208
+      ],
+      "id": "efd2cff7-801e-40a1-bfcb-d60971776611",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9ec310f1-bfa3-4e47-8dde-b827eceac1d5",
+              "name": "number",
+              "value": "={{ $('input').first().json.buyer_number }}",
+              "type": "string"
+            },
+            {
+              "id": "959ce9ba-36c4-4de1-ba2b-172b74e6b20e",
+              "name": "conversation_id",
+              "value": "={{ $('input').first().json.conversation_id }}",
+              "type": "string"
+            },
+            {
+              "id": "208d70b6-3415-4fd3-8c85-0990c39e0c82",
+              "name": "source_url",
+              "value": "={{ $('input').first().json.source_url }}",
+              "type": "string"
+            },
+            {
+              "id": "ade4e580-4b86-4a9b-bfd8-f337ff9d1921",
+              "name": "source_id",
+              "value": "={{ $('input').first().json.source_id }}",
+              "type": "string"
+            },
+            {
+              "id": "00eff6d1-40c0-4983-bc79-dd8e9d2100e9",
+              "name": "source_type",
+              "value": "={{ $('input').first().json.source_type }}",
+              "type": "string"
+            },
+            {
+              "id": "22350094-8e06-41d2-b74a-0ae985ec48fc",
+              "name": "ctwa_clid",
+              "value": "={{ $('input').first().json.ctwa_clid }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1504,
+        -224
+      ],
+      "id": "3a3edfb1-1dc5-40fc-99da-41815c8eed35",
+      "name": "for CAPI lead payload"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// n8n Function node (JavaScript)\n\nconst crypto = require('crypto');\n\n// Helper: SHA-256 hash\nfunction sha256(value) {\n  if (!value) return undefined;\n  return crypto.createHash('sha256')\n    .update(value.trim().toLowerCase())\n    .digest('hex');\n}\n\n// Extract values from incoming JSON\nconst phone_number    = $json.number;            // WhatsApp number\nconst conversation_id = $json.conversation_id;   // WhatsApp conversation ID\n\n// Optional source info provided directly\nconst source_url   = $json.source_url;\nconst source_id    = $json.source_id;\nconst source_type  = $json.source_type;\n\n// ctwa_clid may be provided directly\nlet ctwa_clid = $json.ctwa_clid;\n\n// (optional) FB Page ID if you have it\nconst page_id = $json.page_id;\n\n// Normalize phone (digits only, include country code)\nconst phone_digits = phone_number ? phone_number.replace(/\\D/g, '') : undefined;\n\n// Decide lead_source dynamically\nlet lead_source;\nif (source_type === \"ad\") {\n  lead_source = \"CTWA\";\n} else if (source_type) {\n  lead_source = source_type;\n} else {\n  lead_source = \"unknown\";\n}\n\n// Fallback: extract ctwa_clid from source_url if not provided\nif (!ctwa_clid && source_url && source_url.includes(\"ctwa_clid=\")) {\n  try {\n    const after = source_url.split(\"ctwa_clid=\")[1];\n    ctwa_clid = after.includes(\"&\") ? after.split(\"&\")[0] : after;\n  } catch (_) { /* leave undefined if parsing fails */ }\n}\n\n// Prefer inbound timestamp if present; else server time\nlet event_time = Math.floor(Date.now() / 1000);\nif ($json.timestamp) {\n  const t = parseInt(String($json.timestamp), 10);\n  if (!Number.isNaN(t)) event_time = t;\n}\n\n// Build CAPI payload\nconst payload = {\n  data: [\n    {\n      // Business Messaging lead event\n      event_name: \"LeadSubmitted\",\n      event_time,\n      event_id: `lead_whatsapp_${conversation_id}`,\n      action_source: \"chat\",\n      ...(source_url ? { event_source_url: source_url } : {}),\n\n      user_data: {\n        ...(phone_digits ? { ph: sha256(phone_digits) } : {}),\n        ...(ctwa_clid ? { ctwa_clid } : {}), // DO NOT hash\n        ...(page_id ? { page_id } : {})\n        // If you have a stable CRM ID, add it (not the phone hash):\n        // ...(internal_id ? { external_id: internal_id } : {})\n        // If you capture email, add:\n        // ...(email ? { em: sha256(email) } : {})\n      },\n\n      // Non-identifying passthrough\n      custom_data: {\n        ...(source_id ? { source_id } : {}),\n        ...(source_type ? { source_type } : {}),\n        ...(source_url ? { source_url } : {}),\n        lead_source\n      }\n    }\n  ]\n  // Testing only:\n  // , \"test_event_code\": \"TEST123\"\n};\n\nreturn { json: payload };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1728,
+        -224
+      ],
+      "id": "87c2dc01-928d-47ae-9ecb-ed2cdccbab01",
+      "name": "Make CAPI Lead payload"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v19.0/664532986137601/events",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer EAAIQX0D6Kg0BPR93gijecZC1ejuAt3nUxgOedeMBsEvqjIuSs3pE6ob1WZCSaNXSZCedywu9IroWAp2IbVpiplsTZBDkCt7EZB8ZBGXySk0TAz6jmrlSCN8bU5HWB0lkTOJzG8DpvATlhW6IZA8lK2qrl9Niw9U1XnXhvukBQy1pyoPmP5ZBhiFGEyS6ZBR4JlAZDZD"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.toJsonString() }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1952,
+        -224
+      ],
+      "id": "9cf29e05-bdc0-42ef-a48e-baa43f00ccd3",
+      "name": "CAPI Worked V2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e5a574a5-39d5-4a18-8963-a2bff5ffeaac",
+              "leftValue": "={{ $('input').first().json.source_url }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        192,
+        0
+      ],
+      "id": "57f39691-57a2-4ad6-9430-9c5f8ad6f11f",
+      "name": "If marketing channel"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://odsoebcyqmipdqarlycz.supabase.co/rest/v1/rpc/get_chat_history_count",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "input_conversation_id",
+              "value": "={{ $('input').first().json.conversation_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        400,
+        -16
+      ],
+      "id": "d8fd10f6-1be3-4d0b-a5aa-6a27e69e579f",
+      "name": "get total message count",
+      "retryOnFail": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "nbFHgM327xNGSObK",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "75304e83-6f90-442f-b19b-b92a152fc4a5",
+              "leftValue": "={{ $json.total_count }}",
+              "rightValue": 2,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        -16
+      ],
+      "id": "5155fd2d-2ab9-4b74-adfe-c57a7ab9bd40",
+      "name": "If more than 2 messages"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "zw_mql_numbers",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "number",
+              "keyValue": "={{ $('input').first().json.buyer_number }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        208,
+        208
+      ],
+      "id": "d8155ae4-a22d-4f6b-8187-e97830a1df93",
+      "name": "Get MQL",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "nbFHgM327xNGSObK",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f880766b-c4f2-4e86-8ad9-fd69c7d8dbd3",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        368,
+        208
+      ],
+      "id": "fbb5c2b7-448e-418d-a81a-66f2950b967c",
+      "name": "If no MQL"
+    },
+    {
+      "parameters": {
+        "tableId": "zw_mql_numbers",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "number",
+              "fieldValue": "={{ $('input').first().json.buyer_number }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1952,
+        144
+      ],
+      "id": "b84e23c3-a0b8-4524-bd61-526f5ab71906",
+      "name": "Create an MQL row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "nbFHgM327xNGSObK",
+          "name": "Supabase ZendoWhisper"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8c2c6090-af77-4cc6-beab-9035589baed6",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "duplicate key",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "e7ebd891-ecac-4f3a-865c-d183e7088b3c",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "unique constraint",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1952,
+        352
+      ],
+      "id": "86411188-0547-471c-a9ad-50776bdd175e",
+      "name": "If duplicate error"
+    },
+    {
+      "parameters": {
+        "errorMessage": "error in [Find Relevant Buyer Call Hubspot Deal and CAPI] workflow"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1952,
+        560
+      ],
+      "id": "b8453458-0ec0-40d0-bf20-7ae537c9f4af",
+      "name": "Stop and Error1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fb3ba7c0-9b07-4b3d-b36d-6a67849abbb5",
+              "leftValue": "={{ $json.summary }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        912,
+        208
+      ],
+      "id": "2f358a86-e11c-4730-b095-76714649b778",
+      "name": "If summary found successfully"
+    }
+  ],
+  "connections": {
+    "input": {
+      "main": [
+        [
+          {
+            "node": "Get MQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Conversation Summary'": {
+      "main": [
+        [
+          {
+            "node": "If summary found successfully",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Sentiment Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sentiment Analysis": {
+      "main": [
+        [
+          {
+            "node": "Call 'HubSpot Deal'",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "for CAPI lead payload",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create an MQL row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "for CAPI lead payload": {
+      "main": [
+        [
+          {
+            "node": "Make CAPI Lead payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Make CAPI Lead payload": {
+      "main": [
+        [
+          {
+            "node": "CAPI Worked V2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If marketing channel": {
+      "main": [
+        [
+          {
+            "node": "get total message count",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call 'Conversation Summary'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get total message count": {
+      "main": [
+        [
+          {
+            "node": "If more than 2 messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If more than 2 messages": {
+      "main": [
+        [
+          {
+            "node": "Call 'Conversation Summary'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get MQL": {
+      "main": [
+        [
+          {
+            "node": "If no MQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If no MQL": {
+      "main": [
+        [
+          {
+            "node": "If marketing channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an MQL row": {
+      "main": [
+        [],
+        [
+          {
+            "node": "If duplicate error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If duplicate error": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Stop and Error1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If summary found successfully": {
+      "main": [
+        [
+          {
+            "node": "Sentiment Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "diJYcEVHxO6GUcaA"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "45bed81c-f481-4881-bb56-cbcb6d914d2f",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-25T11:54:03.877Z",
+      "updatedAt": "2025-09-25T11:54:03.877Z",
+      "role": "workflow:owner",
+      "workflowId": "QKRsOQtuaBWilaDt",
+      "projectId": "6tAtlxJWCabRStRk",
+      "project": {
+        "createdAt": "2025-02-23T09:34:22.834Z",
+        "updatedAt": "2025-09-20T11:43:05.000Z",
+        "id": "6tAtlxJWCabRStRk",
+        "name": "Intellixio",
+        "type": "team",
+        "icon": {
+          "type": "icon",
+          "value": "layer-group"
+        },
+        "description": "",
+        "projectRelations": [
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "f34baaa0-ad5e-4058-8dd6-4597cbdb4c4b",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-02-23T09:31:05.569Z",
+              "updatedAt": "2025-09-25T04:01:57.000Z",
+              "id": "f34baaa0-ad5e-4058-8dd6-4597cbdb4c4b",
+              "email": "nazmul@intellixio.com",
+              "firstName": "Md",
+              "lastName": "Nazmul Hoque Bhuiyan",
+              "personalizationAnswers": null,
+              "settings": {
+                "userActivated": true,
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "gnnzSL8nJSeJJzsW",
+                "userActivatedAt": 1742741512234,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1743747154775
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-24",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "1e68db5b-4913-45af-b443-69532f68ffac",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-04-13T06:25:33.258Z",
+              "updatedAt": "2025-09-25T05:33:28.000Z",
+              "id": "1e68db5b-4913-45af-b443-69532f68ffac",
+              "email": "arafi304.office@gmail.com",
+              "firstName": "Mohammad",
+              "lastName": "Al Rafi",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "SKLCNSSSGove7dt7",
+                "userActivated": true,
+                "userActivatedAt": 1746352924058,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1747539770607
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-24",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "9ee433e6-26e5-4c4e-a0a9-059003221711",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-05-21T06:43:50.821Z",
+              "updatedAt": "2025-09-25T11:36:22.000Z",
+              "id": "9ee433e6-26e5-4c4e-a0a9-059003221711",
+              "email": "sumon.intellixio@gmail.com",
+              "firstName": "Zahid Khandaker",
+              "lastName": "Sumon",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-24",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "b4a0fd83-613e-45d3-95bc-b8c90438d59e",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-09-20T11:32:07.300Z",
+              "updatedAt": "2025-09-23T02:59:58.000Z",
+              "id": "b4a0fd83-613e-45d3-95bc-b8c90438d59e",
+              "email": "nazmulofficial@outlook.com",
+              "firstName": "Sheikh Mohammad Nazmul",
+              "lastName": "Hasan",
+              "personalizationAnswers": null,
+              "settings": null,
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-22",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-09-25T11:54:04.226Z",
+      "updatedAt": "2025-09-25T11:54:04.226Z",
+      "id": "MNlNSq9SvIJ4RW45",
+      "name": "dev-of:2VuYwGP58tE1WOho"
+    }
+  ]
+}
