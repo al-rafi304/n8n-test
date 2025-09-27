@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-09-24T16:38:27.271Z",
-  "updatedAt": "2025-09-27T07:29:44.961Z",
+  "updatedAt": "2025-09-27T07:41:39.569Z",
   "id": "R5BZCurFPWPrsRt5",
   "name": "test3",
   "active": false,
@@ -69,24 +69,12 @@
   "connections": {
     "When clicking ‘Execute workflow’": {
       "main": [
-        [
-          {
-            "node": "Get a row",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Get a row": {
       "main": [
-        [
-          {
-            "node": "Execute a SQL query",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     }
   },
@@ -98,7 +86,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "30c259c7-4132-4045-92a4-a2f2e89b4ea3",
+  "versionId": "6211a342-c249-48d1-bf18-ca8e9c5f09aa",
   "triggerCount": 0,
   "shared": [
     {
