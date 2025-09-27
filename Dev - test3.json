@@ -1,7 +1,7 @@
 {
-  "createdAt": "2025-09-24T16:39:04.532Z",
-  "updatedAt": "2025-09-24T16:40:53.000Z",
-  "id": "3tpQ14LqoiyxuCRt",
+  "createdAt": "2025-09-27T07:07:50.040Z",
+  "updatedAt": "2025-09-27T07:08:11.000Z",
+  "id": "Dmu0lX0B7t5xb94y",
   "name": "Dev - test3",
   "active": false,
   "isArchived": false,
@@ -44,6 +44,26 @@
           "name": "Supabase ZendoWhisper"
         }
       }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        416,
+        0
+      ],
+      "id": "d192c1c8-925b-447f-ac6e-8f964e3be74f",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "NmBd5jRogFqahwb7",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
     }
   ],
   "connections": {
@@ -57,22 +77,35 @@
           }
         ]
       ]
+    },
+    "Get a row": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
     "executionOrder": "v1"
   },
   "staticData": null,
-  "meta": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
   "pinData": {},
-  "versionId": "09d42e82-1e15-4379-afc7-938c08159b9b",
+  "versionId": "c5e3be31-3744-40be-aa8f-d027227f41f5",
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-09-24T16:39:04.660Z",
-      "updatedAt": "2025-09-24T16:39:04.660Z",
+      "createdAt": "2025-09-27T07:07:50.211Z",
+      "updatedAt": "2025-09-27T07:07:50.211Z",
       "role": "workflow:owner",
-      "workflowId": "3tpQ14LqoiyxuCRt",
+      "workflowId": "Dmu0lX0B7t5xb94y",
       "projectId": "6tAtlxJWCabRStRk",
       "project": {
         "createdAt": "2025-02-23T09:34:22.834Z",
@@ -93,7 +126,7 @@
             "projectId": "6tAtlxJWCabRStRk",
             "user": {
               "createdAt": "2025-02-23T09:31:05.569Z",
-              "updatedAt": "2025-09-24T10:51:36.000Z",
+              "updatedAt": "2025-09-27T06:48:56.000Z",
               "id": "f34baaa0-ad5e-4058-8dd6-4597cbdb4c4b",
               "email": "nazmul@intellixio.com",
               "firstName": "Md",
@@ -111,7 +144,7 @@
               },
               "disabled": false,
               "mfaEnabled": false,
-              "lastActiveAt": "2025-09-23",
+              "lastActiveAt": "2025-09-26",
               "isPending": false
             }
           },
@@ -122,7 +155,7 @@
             "projectId": "6tAtlxJWCabRStRk",
             "user": {
               "createdAt": "2025-04-13T06:25:33.258Z",
-              "updatedAt": "2025-09-23T18:00:19.000Z",
+              "updatedAt": "2025-09-26T18:00:53.000Z",
               "id": "1e68db5b-4913-45af-b443-69532f68ffac",
               "email": "arafi304.office@gmail.com",
               "firstName": "Mohammad",
@@ -140,7 +173,7 @@
               },
               "disabled": false,
               "mfaEnabled": false,
-              "lastActiveAt": "2025-09-23",
+              "lastActiveAt": "2025-09-26",
               "isPending": false
             }
           },
@@ -151,7 +184,7 @@
             "projectId": "6tAtlxJWCabRStRk",
             "user": {
               "createdAt": "2025-05-21T06:43:50.821Z",
-              "updatedAt": "2025-09-24T06:27:51.000Z",
+              "updatedAt": "2025-09-27T06:33:34.000Z",
               "id": "9ee433e6-26e5-4c4e-a0a9-059003221711",
               "email": "sumon.intellixio@gmail.com",
               "firstName": "Zahid Khandaker",
@@ -162,7 +195,7 @@
               },
               "disabled": false,
               "mfaEnabled": false,
-              "lastActiveAt": "2025-09-23",
+              "lastActiveAt": "2025-09-26",
               "isPending": false
             }
           },
