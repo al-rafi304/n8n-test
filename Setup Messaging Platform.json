@@ -1,0 +1,1460 @@
+{
+  "createdAt": "2025-04-04T13:20:15.093Z",
+  "updatedAt": "2025-10-05T09:39:40.955Z",
+  "id": "XWkjdfuEI4BdaGJP",
+  "name": "Setup Messaging Platform",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Executes When:\n - WABA is successfully linked with seller's subaccount and onboarder submits the completion form\n",
+        "height": 120,
+        "width": 360,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1376,
+        -16
+      ],
+      "id": "1b4ff7a2-d648-45f8-a036-568987d5b24e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://messaging.twilio.com/v1/Services",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "FriendlyName",
+              "value": "Message Buyers"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -224,
+        -944
+      ],
+      "id": "737e216a-9d78-4164-a84e-e4a9572b4769",
+      "name": "Create message service",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "FzkQwkXqb0qmCyWA",
+          "name": "Dynamic Twilio Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://messaging.twilio.com/v1/Services/{{ $json.sid }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "InboundRequestUrl",
+              "value": "https://odsoebcyqmipdqarlycz.supabase.co/functions/v1/webhook-handler"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        -944
+      ],
+      "id": "a589446f-8998-4dc9-8a66-94638f3fd4a0",
+      "name": "Set inbound URL",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "FzkQwkXqb0qmCyWA",
+          "name": "Dynamic Twilio Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://messaging.twilio.com/v1/Services/{{ $('Create message service').item.json.sid }}/ChannelSenders",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "Sid",
+              "value": "={{ $json.wp_sid }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        -944
+      ],
+      "id": "929344d2-2c97-4fc2-bc85-ae3cf6c2c8bc",
+      "name": "Add number",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "FzkQwkXqb0qmCyWA",
+          "name": "Dynamic Twilio Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://messaging.twilio.com/v2/Channels/Senders",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "Channel",
+              "value": "whatsapp"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        224,
+        -944
+      ],
+      "id": "0d7a48a1-d438-493c-9a3d-5c0978cd81de",
+      "name": "Get WP Sid",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "FzkQwkXqb0qmCyWA",
+          "name": "Dynamic Twilio Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\n\nfor (const sender of $input.all()[0].json.senders) {\n  if (sender.status === \"ONLINE\") {\n    $input.all()[0].json.wp_sid = sender.sid;\n    $input.all()[0].json.wp_number = sender.sender_id;\n  }\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        -944
+      ],
+      "id": "57193006-5b4c-48cd-ba4c-8fb0c38f725f",
+      "name": "Extract wp_sid"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://content.twilio.com/v1/Content",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"friendly_name\": \"human_followup\",\n  \"language\": \"en\",\n  \"variables\": {\n    \"1\":\"Thank you for your question, we are open till 9pm\"\n  },\n  \"types\": {\n    \"twilio/text\": {\n      \"body\": \"Hi, following up on your recent question. Our support specialist has provided the following information:\\n\\n{{1}}\\n\\nFeel free to reply if you need anything else.\"\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -224,
+        -736
+      ],
+      "id": "f0be3e78-20ce-4e56-b081-c50aa13dccdb",
+      "name": "Create Message Template",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "FzkQwkXqb0qmCyWA",
+          "name": "Dynamic Twilio Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://content.twilio.com/v1/Content/{{ $json.sid }}/ApprovalRequests/whatsapp",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"name\": \"human_followup\",\n  \"category\": \"UTILITY\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        -736
+      ],
+      "id": "ad3d9f12-753c-4225-91e0-235933cf8aa3",
+      "name": "Send Whatsapp Verification",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "FzkQwkXqb0qmCyWA",
+          "name": "Dynamic Twilio Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "setup-messaging-platform",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1376,
+        -160
+      ],
+      "id": "7b36d6aa-3c0f-4124-b43a-d908b9c34e59",
+      "name": "Webhook",
+      "webhookId": "438b262e-b5ac-425e-84c8-80a724231566"
+    },
+    {
+      "parameters": {
+        "content": "## Twilio Configuration\n - Creates a ```messaging service``` for seller's subaccount\n - Sets incoming message callback to central n8h webhook\n - Adds the verified whatsapp number to that messaging service\n - ~~Creates `Message Template` and submits for verification~~",
+        "height": 560,
+        "width": 1080,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        -1104
+      ],
+      "id": "d9b600a7-0fda-4eba-a6f5-50f85b576a9c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"error\": \"The request payload is missing required fields or contains invalid data.\"\n}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        -944,
+        -64
+      ],
+      "id": "45efa071-78bf-4ed0-8e6b-c60cd5599349",
+      "name": "Invalid request response"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"Configuration Successfull\"\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        1680,
+        -560
+      ],
+      "id": "f1822f2d-263f-42a4-97dc-3cae28e503eb",
+      "name": "Success Response"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "workspaces",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Get Workspace').item.json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "ai_whatsapp",
+              "fieldValue": "={{ $('Extract wp_sid').item.json.wp_number.slice(9) }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        864,
+        -944
+      ],
+      "id": "4b9234d7-43f1-4d7c-bb7a-5e085ce0b880",
+      "name": "Update Seller DB",
+      "credentials": {
+        "supabaseApi": {
+          "id": "nbFHgM327xNGSObK",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e5003b48-68d4-4a14-aae7-72268be32369",
+              "name": "workspace_id",
+              "value": "={{ $json.body.workspace_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -944,
+        -256
+      ],
+      "id": "268e8852-a68b-49b3-812b-797c0b9d7974",
+      "name": "Set Vars",
+      "retryOnFail": false,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"error\": \"The request payload is missing required fields or contains invalid data.\"\n}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        -720,
+        -160
+      ],
+      "id": "57c12067-2ee2-4db0-9e78-dafb1e1336c7",
+      "name": "Invalid Request Response2"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "ZyKdY1fuvFlkAH2F",
+          "mode": "list",
+          "cachedResultName": "Intellixio — Get Workspace Data"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "workspace_id": "={{ $json.workspace_id }}"
+          },
+          "matchingColumns": [
+            "seller_id"
+          ],
+          "schema": [
+            {
+              "id": "workspace_id",
+              "displayName": "workspace_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "twilio_account_id",
+              "displayName": "twilio_account_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "d360_client_id",
+              "displayName": "d360_client_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -720,
+        -368
+      ],
+      "id": "226d0692-9135-4916-91e1-ea0361c38b23",
+      "name": "Get Workspace"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "749c4c85-6513-428d-a3f5-da40efcdc3f6",
+              "leftValue": "={{ $json.body.workspace_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1184,
+        -160
+      ],
+      "id": "9ad1c5c4-cced-42e8-bb6b-d9f7e79b9c80",
+      "name": "Validate Request"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.messaging_platform }}",
+                    "rightValue": "TWILIO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "4e94c69d-3005-4de0-bb82-c2122ec0e02a"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Twilio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "437dd625-0cdb-4aca-88a2-99f28113d3f2",
+                    "leftValue": "={{ $json.messaging_platform }}",
+                    "rightValue": "360D",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "360D"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -544,
+        -368
+      ],
+      "id": "8d5b2456-4926-4b08-b72a-73a8b0f88a11",
+      "name": "Messaging Service"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://hub.360dialog.io/api/v2/partners/pMeh8cPA/channels/{{ $json.partner_channels[0].id }}/api_keys",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -176,
+        -336
+      ],
+      "id": "d95633a7-e9c7-45f6-8946-01f42b369156",
+      "name": "Generate Client API Key",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "xtzaH2LSSQ2WiJgg",
+          "name": "360Dialog Partner Hub API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "workspaces",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Get Workspace').first().json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "ai_whatsapp",
+              "fieldValue": "={{ '+' + $('Get Channel').first().json.partner_channels[0].setup_info.phone_number }}"
+            },
+            {
+              "fieldId": "d360_api_key",
+              "fieldValue": "={{ $json.encryptedClientKey }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1312,
+        -336
+      ],
+      "id": "e776152b-4339-4e66-8468-bbfa28e724bf",
+      "name": "Update Seller DB1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "nbFHgM327xNGSObK",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "95f0ebcb-a629-472e-b950-e66b8dbd6055",
+              "name": "ai_whatsapp",
+              "value": "={{ $('Get Workspace').first().json.messaging_service === \"TWILIO\" ? \n$('Extract wp_sid').item.json.wp_number.slice(9) : '+' + $('Get Channel').first().json.partner_channels[0].setup_info.phone_number}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        960,
+        -336
+      ],
+      "id": "982bab1e-2299-4036-b029-c0ab6eeac4b1",
+      "name": "Get WA Number"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://waba-v2.360dialog.io/v1/configs/webhook",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "D360-API-KEY",
+              "value": "={{ $('Generate Client API Key').first().json.api_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"url\": \"https://odsoebcyqmipdqarlycz.supabase.co/functions/v1/webhook-handler?client-id={{ $('Get Workspace').first().json.d360_client_id }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        784,
+        -336
+      ],
+      "id": "0ddb555a-45fb-4b63-9b11-4cacd0d95b46",
+      "name": "Set Inbound URL"
+    },
+    {
+      "parameters": {
+        "url": "=https://hub.360dialog.io/api/v2/partners/pMeh8cPA/channels?filters={\"client_id\": \"{{ $json.d360_client_id }}\"}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -336,
+        -336
+      ],
+      "id": "7bb63a3d-e9e7-436c-932b-50a2738be08c",
+      "name": "Get Channel",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "xtzaH2LSSQ2WiJgg",
+          "name": "360Dialog Partner Hub API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\n\nconst secretToEncrypt = $('Generate Client API Key').first().json.api_key\nconst encryptionKey = $vars.db_encryption_key\n\n\nconst algorithm = 'aes-256-cbc';\n// Initialization Vector (IV) makes the encryption more secure\nconst iv = crypto.randomBytes(16);\n\nconst cipher = crypto.createCipheriv(algorithm, Buffer.from(encryptionKey), iv);\nlet encrypted = cipher.update(secretToEncrypt);\nencrypted = Buffer.concat([encrypted, cipher.final()]);\n\nconst encryptedClientKey = iv.toString('hex') + ':' + encrypted.toString('hex');\n\nfor (const item of $input.all()) {\n  item.json.encryptedClientKey = encryptedClientKey;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1152,
+        -336
+      ],
+      "id": "e3ae9a7a-992c-4f5b-ae93-80aa1c11e5f4",
+      "name": "Encrypt Auth Token"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "workspace_id"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1376,
+        -368
+      ],
+      "id": "8f183e4e-bd3e-4dde-a65d-163d698defe8",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://odsoebcyqmipdqarlycz.supabase.co/rest/v1/rpc/navigate_workspace_setup_steps",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "input_workspace_id",
+              "value": "={{ $('Get Workspace').first().json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1232,
+        -112
+      ],
+      "id": "d08a9866-d22c-4087-83b1-70cb41735c71",
+      "name": "navigate_workspace_setup_steps",
+      "credentials": {
+        "supabaseApi": {
+          "id": "nbFHgM327xNGSObK",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1536,
+        -320
+      ],
+      "id": "d5ae9345-394e-427b-8c13-f8dc744451b2",
+      "name": "Merge Choose Branch 1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://waba-v2.360dialog.io/v1/configs/templates",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "D360-API-KEY",
+              "value": "={{ $('Generate Client API Key').first().json.api_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"name\": \"human_followup\",\n  \"language\": \"en\",\n  \"category\": \"UTILITY\",\n  \"components\": [\n    {\n      \"type\": \"BODY\",\n      \"text\": \"Hi, following up on your recent question. Our support specialist has provided the following information:\\n\\n{{1}}\\n\\nFeel free to reply if you need anything else.\",\n      \"example\": {\n        \"body_text\": [\n          [\n            \"Thank you for your question, we are open till 9pm\"\n          ]\n        ]\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        -336
+      ],
+      "id": "74ca1b5b-9ca3-44c4-875c-7e27a23f3657",
+      "name": "Create Template - human_followup",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://waba-v2.360dialog.io/v1/configs/templates",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "d360-api-key",
+              "value": "={{ $('Generate Client API Key').first().json.api_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"name\": \"handover_notification\",\n  \"language\": \"en_US\",\n  \"category\": \"UTILITY\",\n  \"components\": [\n    {\n      \"type\": \"BODY\",\n      \"text\": \"Hi,\\nA conversation with a buyer requires your input on the business WhatsApp. Please find the details below:\\n\\nBuyer: {{1}}\\nMessage: {{2}}\\n\\nPlease respond at your earliest convenience.\",\n      \"example\": {\n        \"body_text\": [\n          [\"+8801234567890\", \"I want to talk to a human\"]\n        ]\n      }\n    },\n    {\n      \"type\": \"BUTTONS\",\n      \"buttons\": [\n        {\n          \"type\": \"URL\",\n          \"text\": \"Reply Here\",\n          \"url\": \"https://app.zendowhisper.com/{{1}}\",\n          \"example\": [\n            \"conversation?chat=1511c0ec-77d7-4ddb-9e0f-24e617c2fa6d\"\n          ]\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        -336
+      ],
+      "id": "40cf7d73-07a5-4198-a001-15b2667f50df",
+      "name": "Create Template - handover_notification",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://waba-v2.360dialog.io/v1/configs/templates",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "d360-api-key",
+              "value": "={{ $('Generate Client API Key').first().json.api_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"name\": \"reply_reminder\",\n  \"language\": \"en_US\",\n  \"category\": \"UTILITY\",\n  \"components\": [\n    {\n      \"type\": \"BODY\",\n      \"text\": \"Hello,\\nThis is a reminder that buyer {{1}} is still waiting for a response to their message.\\n\\nReplying promptly helps provide a great customer experience.\",\n      \"example\": {\n        \"body_text\": [\n          [\"ZendoWhisper\"]\n        ]\n      }\n    },\n    {\n      \"type\": \"BUTTONS\",\n      \"buttons\": [\n        {\n          \"type\": \"URL\",\n          \"text\": \"Reply Here\",\n          \"url\": \"https://app.zendowhisper.com/{{1}}\",\n          \"example\": [\n            \"conversation?chat=1511c0ec-77d7-4ddb-9e0f-24e617c2fa6d\"\n          ]\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        416,
+        -336
+      ],
+      "id": "9f6fbb39-ae2f-47d7-9520-97fd8c48443c",
+      "name": "Create Template - reply_reminder",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ede709f9-234b-476d-bf17-b172af028cef",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        576,
+        -336
+      ],
+      "id": "13125ec1-1ef0-4e73-97fa-42bf576165d6",
+      "name": "Error?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://intellixio.sentry.io/api/4509501608951808/store/",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "sentryIoOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "sentry_version",
+              "value": "7"
+            },
+            {
+              "name": "sentry_client",
+              "value": "n8n-custom/1.0"
+            },
+            {
+              "name": "sentry_key",
+              "value": "d806db793b1f15f95de73f300db392bc"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"timestamp\": \"{{ new Date().toISOString() }}\",\n  \"level\": \"error\",\n  \"platform\": \"javascript\",\n  \"message\": \"Template creation failed\",\n  \"tags\": {\n    \"workflow_id\": \"{{ $workflow.id }}\",\n    \"workflow_name\": \"{{ $workflow.name }}\",\n    \"execution_id\": \"{{ $execution.id }}\",\n    \"failing_node\": \"Create Templates\"\n  },\n  \"extra\": {\n    \"execution_url\": \"https://intellixio.app.n8n.cloud/workflow/{{ $workflow.id }}/executions/{{ $execution.id }}\",\n    \"workspace\": {{ JSON.stringify($('Get Workspace').item.json) }},\n    \"error\": {{ JSON.stringify($json.error) }}\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        784,
+        -496
+      ],
+      "id": "3e7a1390-3fae-4df3-9154-cfdba4383609",
+      "name": "Sentry",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "HKA0ob6dACTtTNQt",
+          "name": "ZendoWhisper Twilio Basic Auth"
+        },
+        "sentryIoOAuth2Api": {
+          "id": "OAFJHYZ4A3PzHvNK",
+          "name": "Sentry.io account"
+        }
+      },
+      "notes": "{\n  \"timestamp\": \"{{ new Date().toISOString() }}\",\n  \"level\": \"error\",\n  \"platform\": \"javascript\",\n  \"message\": {{ JSON.stringify($json.error.message.split(\"message\")[1].replace(/[{:}\\\"\\\\]/g, '')) }},\n  \"tags\": {\n    \"workflow_id\": \"{{ $workflow.id }}\",\n    \"workflow_name\": \"{{ $workflow.name }}\",\n    \"execution_id\": \"{{ $execution.id }}\",\n    \"failing_node\": \"{{ $json.error.name }}\"\n  },\n  \"extra\": {\n    \"error_details\": \"dasfd\"\n  }\n}"
+    }
+  ],
+  "connections": {
+    "Create message service": {
+      "main": [
+        [
+          {
+            "node": "Set inbound URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set inbound URL": {
+      "main": [
+        [
+          {
+            "node": "Get WP Sid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get WP Sid": {
+      "main": [
+        [
+          {
+            "node": "Extract wp_sid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract wp_sid": {
+      "main": [
+        [
+          {
+            "node": "Add number",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Message Template": {
+      "main": [
+        [
+          {
+            "node": "Send Whatsapp Verification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add number": {
+      "main": [
+        [
+          {
+            "node": "Update Seller DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Seller DB": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Vars": {
+      "main": [
+        [
+          {
+            "node": "Get Workspace",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Invalid Request Response2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Workspace": {
+      "main": [
+        [
+          {
+            "node": "Messaging Service",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Request": {
+      "main": [
+        [
+          {
+            "node": "Set Vars",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Invalid request response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Messaging Service": {
+      "main": [
+        [
+          {
+            "node": "Create message service",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create Message Template",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Client API Key": {
+      "main": [
+        [
+          {
+            "node": "Create Template - human_followup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get WA Number": {
+      "main": [
+        [
+          {
+            "node": "Encrypt Auth Token",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "navigate_workspace_setup_steps",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Seller DB1": {
+      "main": [
+        [
+          {
+            "node": "Merge Choose Branch 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Inbound URL": {
+      "main": [
+        [
+          {
+            "node": "Get WA Number",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Channel": {
+      "main": [
+        [
+          {
+            "node": "Generate Client API Key",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Encrypt Auth Token": {
+      "main": [
+        [
+          {
+            "node": "Update Seller DB1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get Workspace",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "navigate_workspace_setup_steps": {
+      "main": [
+        [
+          {
+            "node": "Merge Choose Branch 1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Choose Branch 1": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Template - human_followup": {
+      "main": [
+        [
+          {
+            "node": "Create Template - handover_notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Template - handover_notification": {
+      "main": [
+        [
+          {
+            "node": "Create Template - reply_reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Template - reply_reminder": {
+      "main": [
+        [
+          {
+            "node": "Error?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error?": {
+      "main": [
+        [
+          {
+            "node": "Sentry",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Set Inbound URL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Inbound URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "diJYcEVHxO6GUcaA"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "intellixio.app.n8n.cloud",
+            "user-agent": "PostmanRuntime/7.44.0",
+            "content-length": "393",
+            "accept": "*/*",
+            "accept-encoding": "gzip, br",
+            "cache-control": "no-cache",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "103.109.212.20",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "BD",
+            "cf-ray": "95be9d3bb140ce66-SIN",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "multipart/form-data; boundary=--------------------------090735130465965325308954",
+            "postman-token": "eaf0ff6d-4d0a-40f5-90d6-80ce6d1afed9",
+            "x-forwarded-for": "103.109.212.20, 172.71.124.65",
+            "x-forwarded-host": "intellixio.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-25-79cb8df8b5-c7t7k",
+            "x-is-trusted": "yes",
+            "x-real-ip": "103.109.212.20"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "workspace_id": "6e1001b4-e32b-458f-9376-2c450d94f05e"
+          },
+          "webhookUrl": "https://intellixio.app.n8n.cloud/webhook/complete-onboarding",
+          "executionMode": "production"
+        }
+      }
+    ],
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "workspace_id": "9d7df857-de76-4228-a0c0-b2e8995f7830"
+        }
+      }
+    ]
+  },
+  "versionId": "bce31936-e02a-4357-88de-6c7f4d05cf74",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-04-04T13:20:15.096Z",
+      "updatedAt": "2025-04-04T13:20:15.096Z",
+      "role": "workflow:owner",
+      "workflowId": "XWkjdfuEI4BdaGJP",
+      "projectId": "6tAtlxJWCabRStRk",
+      "project": {
+        "createdAt": "2025-02-23T09:34:22.834Z",
+        "updatedAt": "2025-09-20T11:43:05.000Z",
+        "id": "6tAtlxJWCabRStRk",
+        "name": "Intellixio",
+        "type": "team",
+        "icon": {
+          "type": "icon",
+          "value": "layer-group"
+        },
+        "description": "",
+        "projectRelations": [
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "f34baaa0-ad5e-4058-8dd6-4597cbdb4c4b",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-02-23T09:31:05.569Z",
+              "updatedAt": "2025-10-05T04:45:30.000Z",
+              "id": "f34baaa0-ad5e-4058-8dd6-4597cbdb4c4b",
+              "email": "nazmul@intellixio.com",
+              "firstName": "Md",
+              "lastName": "Nazmul Hoque Bhuiyan",
+              "personalizationAnswers": null,
+              "settings": {
+                "userActivated": true,
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "gnnzSL8nJSeJJzsW",
+                "userActivatedAt": 1742741512234,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1759408961539
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-10-04",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "1e68db5b-4913-45af-b443-69532f68ffac",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-04-13T06:25:33.258Z",
+              "updatedAt": "2025-10-05T04:46:08.000Z",
+              "id": "1e68db5b-4913-45af-b443-69532f68ffac",
+              "email": "arafi304.office@gmail.com",
+              "firstName": "Mohammad",
+              "lastName": "Al Rafi",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "SKLCNSSSGove7dt7",
+                "userActivated": true,
+                "userActivatedAt": 1746352924058,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1747539770607
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-10-04",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "9ee433e6-26e5-4c4e-a0a9-059003221711",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-05-21T06:43:50.821Z",
+              "updatedAt": "2025-10-05T04:35:43.000Z",
+              "id": "9ee433e6-26e5-4c4e-a0a9-059003221711",
+              "email": "sumon.intellixio@gmail.com",
+              "firstName": "Zahid Khandaker",
+              "lastName": "Sumon",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-10-04",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "b4a0fd83-613e-45d3-95bc-b8c90438d59e",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-09-20T11:32:07.300Z",
+              "updatedAt": "2025-09-30T03:09:04.000Z",
+              "id": "b4a0fd83-613e-45d3-95bc-b8c90438d59e",
+              "email": "nazmulofficial@outlook.com",
+              "firstName": "Sheikh Mohammad Nazmul",
+              "lastName": "Hasan",
+              "personalizationAnswers": null,
+              "settings": null,
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-29",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-06-16T06:09:52.153Z",
+      "updatedAt": "2025-06-16T06:09:52.153Z",
+      "id": "CkU7pHGuc29ubXR1",
+      "name": "owner:rafi"
+    },
+    {
+      "createdAt": "2025-04-04T09:37:04.361Z",
+      "updatedAt": "2025-04-04T09:37:04.361Z",
+      "id": "GyqLcKSULqXqcBEK",
+      "name": "ZendoWhisper"
+    },
+    {
+      "createdAt": "2025-06-16T06:26:35.032Z",
+      "updatedAt": "2025-06-16T06:26:35.032Z",
+      "id": "fRJk0mHf5UyuWauh",
+      "name": "trigger:manual"
+    },
+    {
+      "createdAt": "2025-08-25T22:18:45.611Z",
+      "updatedAt": "2025-08-25T22:18:45.611Z",
+      "id": "idqUFOPED3dMpm4y",
+      "name": "sys:email"
+    },
+    {
+      "createdAt": "2025-08-28T18:01:05.702Z",
+      "updatedAt": "2025-08-28T18:01:05.702Z",
+      "id": "kq7sVLNJPvREOKdV",
+      "name": "used-by:PM81RHDH4h4CgvJz"
+    },
+    {
+      "createdAt": "2025-06-16T06:04:34.111Z",
+      "updatedAt": "2025-06-16T06:04:34.111Z",
+      "id": "pehd0cDpydkk9KDk",
+      "name": "status:dev"
+    },
+    {
+      "createdAt": "2025-06-16T11:11:56.445Z",
+      "updatedAt": "2025-06-16T11:11:56.445Z",
+      "id": "yYfc2aT3uRRkW4zk",
+      "name": "type:onboarding"
+    }
+  ]
+}
