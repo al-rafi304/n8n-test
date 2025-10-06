@@ -1,0 +1,448 @@
+{
+  "createdAt": "2025-10-05T10:24:06.674Z",
+  "updatedAt": "2025-10-06T08:38:04.444Z",
+  "id": "OWSxUu7ZS2PeCusY",
+  "name": "ZL Buyer Manager",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT contact.value whatsapp, buyers.*\nFROM zendolead.buyer_contact_methods contact\nLEFT JOIN zendolead.buyers ON contact.buyer_id = buyers.id \nWHERE contact.type = 'whatsapp' AND contact.value = $1",
+        "options": {
+          "queryReplacement": "=[{{ $('Input').item.json.whatsapp.trim() }}]"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        384,
+        -16
+      ],
+      "id": "f01427a2-6623-4181-bf8d-e329e66adb09",
+      "name": "Get ZL Buyer",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "NmBd5jRogFqahwb7",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "whatsapp"
+            },
+            {
+              "name": "name"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "36df2288-a44e-42cd-bce2-7ab6136f3abe",
+      "name": "Input"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f5dfe558-15cf-45ef-b745-2a8e8cc0261b",
+              "leftValue": "={{ $json.whatsapp }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        0
+      ],
+      "id": "f877315f-2308-4da7-985a-ad45623a8666",
+      "name": "Valid Input"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "eaebb1a1-eff6-49de-aebc-ff150311fde9",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        592,
+        -16
+      ],
+      "id": "4952cec3-8c8f-4f68-b551-ab3a3d255596",
+      "name": "Found Buyer"
+    },
+    {
+      "parameters": {
+        "useCustomSchema": true,
+        "schema": "zendolead",
+        "tableId": "buyers",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "name",
+              "fieldValue": "={{ $('Input').item.json.name }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        768,
+        160
+      ],
+      "id": "ee213af4-7ddd-4b05-806c-d8d6a0fe4db4",
+      "name": "Create buyer",
+      "credentials": {
+        "supabaseApi": {
+          "id": "nbFHgM327xNGSObK",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "useCustomSchema": true,
+        "schema": "zendolead",
+        "tableId": "buyer_contact_methods",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "type",
+              "fieldValue": "whatsapp"
+            },
+            {
+              "fieldId": "value",
+              "fieldValue": "={{ $('Input').item.json.whatsapp }}"
+            },
+            {
+              "fieldId": "buyer_id",
+              "fieldValue": "={{ $json.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        976,
+        160
+      ],
+      "id": "87c88e90-b774-4d1d-8008-5ac38f7c198d",
+      "name": "Create contact method",
+      "credentials": {
+        "supabaseApi": {
+          "id": "nbFHgM327xNGSObK",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6359d825-b810-4611-b8fe-7a33866df058",
+              "name": "buyer",
+              "value": "={{ $json }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1168,
+        -32
+      ],
+      "id": "896c15c5-2a8c-45e1-a071-41290838180f",
+      "name": "Return"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3db4c28a-9e6d-4bd0-96f8-9a0e158e5549",
+              "name": "buyer",
+              "value": "={{ (() => {\n  var buyer = $('Create buyer').item.json\n  buyer.whatsapp = $('Create contact method').item.json.value\n  return buyer\n})()\n}}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1168,
+        160
+      ],
+      "id": "70e4d044-260a-405c-8078-4ac22a984c88",
+      "name": "Return1"
+    }
+  ],
+  "connections": {
+    "Input": {
+      "main": [
+        [
+          {
+            "node": "Valid Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valid Input": {
+      "main": [
+        [
+          {
+            "node": "Get ZL Buyer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get ZL Buyer": {
+      "main": [
+        [
+          {
+            "node": "Found Buyer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Found Buyer": {
+      "main": [
+        [
+          {
+            "node": "Return",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create buyer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create buyer": {
+      "main": [
+        [
+          {
+            "node": "Create contact method",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create contact method": {
+      "main": [
+        [
+          {
+            "node": "Return1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Return1": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "4c87256c-6679-4ebb-9e3e-5796e535421f",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-10-05T10:24:06.677Z",
+      "updatedAt": "2025-10-05T10:24:06.677Z",
+      "role": "workflow:owner",
+      "workflowId": "OWSxUu7ZS2PeCusY",
+      "projectId": "6tAtlxJWCabRStRk",
+      "project": {
+        "createdAt": "2025-02-23T09:34:22.834Z",
+        "updatedAt": "2025-09-20T11:43:05.000Z",
+        "id": "6tAtlxJWCabRStRk",
+        "name": "Intellixio",
+        "type": "team",
+        "icon": {
+          "type": "icon",
+          "value": "layer-group"
+        },
+        "description": "",
+        "projectRelations": [
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "f34baaa0-ad5e-4058-8dd6-4597cbdb4c4b",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-02-23T09:31:05.569Z",
+              "updatedAt": "2025-10-06T04:07:15.000Z",
+              "id": "f34baaa0-ad5e-4058-8dd6-4597cbdb4c4b",
+              "email": "nazmul@intellixio.com",
+              "firstName": "Md",
+              "lastName": "Nazmul Hoque Bhuiyan",
+              "personalizationAnswers": null,
+              "settings": {
+                "userActivated": true,
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "gnnzSL8nJSeJJzsW",
+                "userActivatedAt": 1742741512234,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1759408961539
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-10-05",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "1e68db5b-4913-45af-b443-69532f68ffac",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-04-13T06:25:33.258Z",
+              "updatedAt": "2025-10-05T18:00:01.000Z",
+              "id": "1e68db5b-4913-45af-b443-69532f68ffac",
+              "email": "arafi304.office@gmail.com",
+              "firstName": "Mohammad",
+              "lastName": "Al Rafi",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "SKLCNSSSGove7dt7",
+                "userActivated": true,
+                "userActivatedAt": 1746352924058,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1747539770607
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-10-05",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "9ee433e6-26e5-4c4e-a0a9-059003221711",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-05-21T06:43:50.821Z",
+              "updatedAt": "2025-10-05T18:00:38.000Z",
+              "id": "9ee433e6-26e5-4c4e-a0a9-059003221711",
+              "email": "sumon.intellixio@gmail.com",
+              "firstName": "Zahid Khandaker",
+              "lastName": "Sumon",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-10-05",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "b4a0fd83-613e-45d3-95bc-b8c90438d59e",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-09-20T11:32:07.300Z",
+              "updatedAt": "2025-09-30T03:09:04.000Z",
+              "id": "b4a0fd83-613e-45d3-95bc-b8c90438d59e",
+              "email": "nazmulofficial@outlook.com",
+              "firstName": "Sheikh Mohammad Nazmul",
+              "lastName": "Hasan",
+              "personalizationAnswers": null,
+              "settings": null,
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-29",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": []
+}
