@@ -1,0 +1,307 @@
+{
+  "createdAt": "2025-07-12T07:56:58.977Z",
+  "updatedAt": "2025-10-13T10:27:00.099Z",
+  "id": "a6yLUNusi1KgwlMW",
+  "name": "DB",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -608,
+        -112
+      ],
+      "id": "80996648-8407-4f1d-b307-5bdc9cb5b594",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO buyers (number, name)\nVALUES ($1, $2)",
+        "options": {
+          "queryReplacement": "=[{{ $json.buyer_number }}]"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        368,
+        16
+      ],
+      "id": "0961905a-d951-45ae-ae5c-968ca7db9a44",
+      "name": "Execute a SQL query1",
+      "credentials": {
+        "postgres": {
+          "id": "NmBd5jRogFqahwb7",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        496,
+        -288
+      ],
+      "id": "9ffb1f62-365a-4e19-84b8-090c795a9bfe",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "46ced1d2-ecbc-497b-882b-5380f505940e",
+              "name": "test",
+              "value": "test",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        192
+      ],
+      "id": "4ebc8e80-c34d-43fe-a720-4e240b375dae",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_chat_histories",
+          "mode": "list",
+          "cachedResultName": "n8n_chat_histories"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        352,
+        -96
+      ],
+      "id": "34d4cdbb-277c-449a-86d9-24b00d01a987",
+      "name": "Select rows from a table",
+      "credentials": {
+        "postgres": {
+          "id": "NmBd5jRogFqahwb7",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "zw_buyers",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "=number",
+              "keyValue": "+8801862874374"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        96,
+        -144
+      ],
+      "id": "2d157e5b-c76e-4ff2-addb-5e1c77f5a6d4",
+      "name": "Get a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "nbFHgM327xNGSObK",
+          "name": "Supabase ZendoWhisper"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        []
+      ]
+    },
+    "No Operation, do nothing": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select rows from a table": {
+      "main": [
+        []
+      ]
+    },
+    "Get a row": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "errorWorkflow": "diJYcEVHxO6GUcaA",
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "none"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "cbaa70ff-4c6a-4169-b060-9a77e0bee3ad",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-07-12T07:56:58.982Z",
+      "updatedAt": "2025-07-12T07:56:58.982Z",
+      "role": "workflow:owner",
+      "workflowId": "a6yLUNusi1KgwlMW",
+      "projectId": "6tAtlxJWCabRStRk",
+      "project": {
+        "createdAt": "2025-02-23T09:34:22.834Z",
+        "updatedAt": "2025-09-20T11:43:05.000Z",
+        "id": "6tAtlxJWCabRStRk",
+        "name": "Intellixio",
+        "type": "team",
+        "icon": {
+          "type": "icon",
+          "value": "layer-group"
+        },
+        "description": "",
+        "projectRelations": [
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "f34baaa0-ad5e-4058-8dd6-4597cbdb4c4b",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-02-23T09:31:05.569Z",
+              "updatedAt": "2025-10-12T03:01:05.000Z",
+              "id": "f34baaa0-ad5e-4058-8dd6-4597cbdb4c4b",
+              "email": "nazmul@intellixio.com",
+              "firstName": "Md",
+              "lastName": "Nazmul Hoque Bhuiyan",
+              "personalizationAnswers": null,
+              "settings": {
+                "userActivated": true,
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "gnnzSL8nJSeJJzsW",
+                "userActivatedAt": 1742741512234,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1759408961539
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-10-11",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "1e68db5b-4913-45af-b443-69532f68ffac",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-04-13T06:25:33.258Z",
+              "updatedAt": "2025-10-12T18:00:01.000Z",
+              "id": "1e68db5b-4913-45af-b443-69532f68ffac",
+              "email": "arafi304.office@gmail.com",
+              "firstName": "Mohammad",
+              "lastName": "Al Rafi",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "SKLCNSSSGove7dt7",
+                "userActivated": true,
+                "userActivatedAt": 1746352924058,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1747539770607
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-10-12",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "9ee433e6-26e5-4c4e-a0a9-059003221711",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-05-21T06:43:50.821Z",
+              "updatedAt": "2025-10-13T05:24:20.000Z",
+              "id": "9ee433e6-26e5-4c4e-a0a9-059003221711",
+              "email": "sumon.intellixio@gmail.com",
+              "firstName": "Zahid Khandaker",
+              "lastName": "Sumon",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-10-12",
+              "isPending": false
+            }
+          },
+          {
+            "createdAt": "2025-09-20T11:43:05.678Z",
+            "updatedAt": "2025-09-20T11:43:05.678Z",
+            "userId": "b4a0fd83-613e-45d3-95bc-b8c90438d59e",
+            "projectId": "6tAtlxJWCabRStRk",
+            "user": {
+              "createdAt": "2025-09-20T11:32:07.300Z",
+              "updatedAt": "2025-09-30T03:09:04.000Z",
+              "id": "b4a0fd83-613e-45d3-95bc-b8c90438d59e",
+              "email": "nazmulofficial@outlook.com",
+              "firstName": "Sheikh Mohammad Nazmul",
+              "lastName": "Hasan",
+              "personalizationAnswers": null,
+              "settings": null,
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2025-09-29",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": []
+}
